@@ -13,6 +13,7 @@ type Ticket = {
   priority?: string;
   ticket_number?: string;
   created_by?: string;
+  created_by_name?: string;
   _authorName?: string;
 };
 
@@ -20,7 +21,7 @@ const authorNameCache: Record<string, string> = {};
 
 let cachedUserId: string | null = null;
 
-async function getAuthorName(ticket: any): Promise<string> {
+async function getAuthorName(ticket: Ticket): Promise<string> {
   const authorId = ticket.created_by?.toString();
   if (!authorId) return 'Unknown';
 
@@ -62,18 +63,18 @@ export default function DashboardPage() {
       let ticketList: Ticket[] = [];
       if (Array.isArray(data)) {
         ticketList = data as Ticket[];
-      } else if (data && Array.isArray((data as any).tickets)) {
-        ticketList = (data as any).tickets;
+      } else if (data && Array.isArray((data).tickets)) {
+        ticketList = (data).tickets;
       } else {
         ticketList = [];
       }
 
-      const enriched = await Promise.all(
-        ticketList.map(async (ticket) => {
-          const authorName = await getAuthorName(ticket);
-          return { ...ticket, _authorName: authorName };
-        })
-      );
+        const enriched = await Promise.all(
+          ticketList.map(async (ticket: Ticket) => {
+            const authorName = await getAuthorName(ticket);
+            return { ...ticket, _authorName: authorName };
+          })
+        );
 
       if (status === 'open') {
         setActiveTickets(enriched);
@@ -115,7 +116,7 @@ export default function DashboardPage() {
       {/* Top navbar */}
       <header className="flex items-center justify-between border-b bg-white px-8 py-4 shadow-sm">
         <h1 className="flex items-center gap-2 text-2xl font-extrabold bg-gradient-to-r from-sky-500 to-indigo-500 bg-clip-text text-transparent">
-          <span>💬</span> Facility's Help Desk
+          <span>💬</span> Facility&apos;s Help Desk
         </h1>
         <div className="flex items-center gap-4">
           <div className="h-8 w-8 rounded-full bg-sky-200 flex items-center justify-center text-sky-700 font-bold">U</div>
