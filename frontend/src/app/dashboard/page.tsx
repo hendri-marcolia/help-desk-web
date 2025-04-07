@@ -1,9 +1,10 @@
 "use client";
 
 import React, { useEffect, useState } from 'react';
+import Link from 'next/link';
 
 type Ticket = {
-  id: string;
+  ticket_id: string;
   title: string;
   status: string;
   created_at: string;
@@ -69,12 +70,12 @@ export default function DashboardPage() {
         ticketList = [];
       }
 
-        const enriched = await Promise.all(
-          ticketList.map(async (ticket: Ticket) => {
-            const authorName = await getAuthorName(ticket);
-            return { ...ticket, _authorName: authorName };
-          })
-        );
+      const enriched = await Promise.all(
+        ticketList.map(async (ticket: Ticket) => {
+          const authorName = await getAuthorName(ticket);
+          return { ...ticket, _authorName: authorName };
+        })
+      );
 
       if (status === 'open') {
         setActiveTickets(enriched);
@@ -98,14 +99,12 @@ export default function DashboardPage() {
   useEffect(() => {
     if (statusFilter === 'open') {
       setTickets(activeTickets);
-      // Always refresh active tickets in background
       fetchTicketsByStatus('open');
     } else {
       if (!resolvedLoaded) {
         fetchTicketsByStatus('closed');
       } else {
         setTickets(resolvedTickets);
-        // Always refresh resolved tickets in background
         fetchTicketsByStatus('closed');
       }
     }
@@ -113,10 +112,9 @@ export default function DashboardPage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Top navbar */}
       <header className="flex items-center justify-between border-b bg-white px-8 py-4 shadow-sm">
         <h1 className="flex items-center gap-2 text-2xl font-extrabold bg-gradient-to-r from-sky-500 to-indigo-500 bg-clip-text text-transparent">
-          <span>💬</span> Facility&apos;s Help Desk
+          <span>💬</span> Facility's Help Desk
         </h1>
         <div className="flex items-center gap-4">
           <div className="h-8 w-8 rounded-full bg-sky-200 flex items-center justify-center text-sky-700 font-bold">U</div>
@@ -124,7 +122,6 @@ export default function DashboardPage() {
       </header>
 
       <main className="mx-auto max-w-6xl p-6 space-y-6">
-        {/* Controls */}
         <div className="flex flex-wrap items-center justify-between gap-4">
           <div className="flex flex-wrap items-center gap-4">
             <input
@@ -153,7 +150,6 @@ export default function DashboardPage() {
           </div>
         </div>
 
-        {/* Tabs */}
         <div className="flex items-center gap-4">
           <div className="flex gap-2 rounded-full bg-gray-100 p-1">
             <button
@@ -180,70 +176,51 @@ export default function DashboardPage() {
         </div>
 
         {loading ? (
-          <div className="flex justify-center">
-            <svg
-              className="h-8 w-8 animate-spin text-sky-500"
-              viewBox="0 0 24 24"
-              fill="none"
-            >
-              <circle
-                className="opacity-25"
-                cx="12"
-                cy="12"
-                r="10"
-                stroke="currentColor"
-                strokeWidth="4"
-              ></circle>
-              <path
-                className="opacity-75"
-                fill="currentColor"
-                d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
-              ></path>
-            </svg>
-          </div>
+          <div className="flex justify-center">Loading...</div>
         ) : error ? (
           <div className="rounded bg-red-100 p-4 text-red-700">{error}</div>
         ) : (
           <ul className="space-y-6">
             {tickets.map((ticket) => (
-              <li
-                key={`${ticket.id}-${ticket.ticket_number ?? ''}`}
-                className="group relative cursor-pointer rounded-2xl border border-gray-200 bg-white p-5 shadow transition hover:shadow-lg"
-              >
-                <div className="flex justify-between items-start mb-3">
-                  <div>
-                    <h2 className="text-lg font-bold text-gray-800">{ticket.title}</h2>
-                    <p className="mt-1 text-sm text-gray-500">{ticket.description || 'No description'}</p>
+              <li key={`${ticket.ticket_id}-${ticket.ticket_number ?? ''}`}>
+                <Link href={`/dashboard/${ticket.ticket_id}`}>
+                  <div className="group relative cursor-pointer rounded-2xl border border-gray-200 bg-white p-5 shadow transition hover:shadow-lg">
+                    <div className="flex justify-between items-start mb-3">
+                      <div>
+                        <h2 className="text-lg font-bold text-gray-800">{ticket.title}</h2>
+                        <p className="mt-1 text-sm text-gray-500">{ticket.description || 'No description'}</p>
+                      </div>
+                      <span className="rounded-full bg-gray-100 px-3 py-1 text-xs font-semibold text-gray-700 whitespace-nowrap">
+                        Ticket #: {ticket.ticket_number ?? 'UNKNOWN'}
+                      </span>
+                    </div>
+                    <div className="flex flex-wrap items-center justify-between gap-2 border-t pt-3 text-xs text-gray-500">
+                      <div className="flex flex-wrap gap-2">
+                        <span className="flex items-center gap-1 rounded-full bg-gray-100 px-2 py-0.5 font-medium">
+                          🕒 {new Date(ticket.created_at).toLocaleString()}
+                        </span>
+                        <span className="flex items-center gap-1 rounded-full bg-gray-100 px-2 py-0.5 font-medium">
+                          👤 {ticket._authorName ?? 'Loading...'}
+                        </span>
+                        <span className="flex items-center gap-1 rounded-full bg-gray-100 px-2 py-0.5 font-medium">
+                          🏢 {ticket.facility?.toUpperCase() || 'UNKNOWN'}
+                        </span>
+                        <span className="flex items-center gap-1 rounded-full bg-gray-100 px-2 py-0.5 font-medium">
+                          🏷️ {ticket.category?.toUpperCase() || 'UNKNOWN'}
+                        </span>
+                      </div>
+                      <span className={`rounded-full px-3 py-1 text-xs font-semibold ${
+                        ticket.status === 'active' || ticket.status === 'open'
+                          ? 'bg-orange-100 text-orange-800'
+                          : ticket.status === 'closed'
+                          ? 'bg-gray-200 text-gray-800'
+                          : 'bg-yellow-100 text-yellow-800'
+                      }`}>
+                        {ticket.status?.toUpperCase() || 'ACTIVE'}
+                      </span>
+                    </div>
                   </div>
-                  <span className="rounded-full bg-gray-100 px-3 py-1 text-xs font-semibold text-gray-700 whitespace-nowrap">
-                    Ticket #: {ticket.ticket_number ?? 'UNKNOWN'}
-                  </span>
-                </div>
-                <div className="flex flex-wrap items-center justify-between gap-2 border-t pt-3 text-xs text-gray-500">
-                  <div className="flex flex-wrap gap-2">
-                    <span className="flex items-center gap-1 rounded-full bg-gray-100 px-2 py-0.5 font-medium">
-                      🕒 {new Date(ticket.created_at).toLocaleString()}
-                    </span>
-                    <span className="flex items-center gap-1 rounded-full bg-gray-100 px-2 py-0.5 font-medium">
-                      👤 {ticket._authorName ?? 'Loading...'}
-                    </span>
-                    <span className="flex items-center gap-1 rounded-full bg-gray-100 px-2 py-0.5 font-medium">
-                      🏢 {ticket.facility?.toUpperCase() || 'UNKNOWN'}
-                    </span>
-                    <span className="flex items-center gap-1 rounded-full bg-gray-100 px-2 py-0.5 font-medium">
-                      🏷️ {ticket.category?.toUpperCase() || 'UNKNOWN'}
-                    </span>
-                  </div>
-                  <span className={`rounded-full px-3 py-1 text-xs font-semibold ${
-                    ticket.status === 'active' || ticket.status === 'open'
-                      ? 'bg-orange-100 text-orange-800'
-                      : ticket.status === 'closed'
-                      ? 'bg-gray-200 text-gray-800'
-                      : 'bg-yellow-100 text-yellow-800'
-                  }`}>
-                    {ticket.status?.toUpperCase() || 'ACTIVE'}
-                  </span>
-                </div>
+                </Link>
               </li>
             ))}
           </ul>
