@@ -1,7 +1,6 @@
-import type { NextConfig } from "next";
 
-const nextConfig: NextConfig = {
-  output: 'export',
+const nextConfig = {
+  // SSR enabled by default; configure additional options here if needed
 };
 
 export default nextConfig;

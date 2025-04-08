@@ -112,44 +112,45 @@ export default function DashboardPage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
+      {/* Enhanced Header */}
       <header className="flex items-center justify-between border-b bg-white px-8 py-4 shadow-sm">
         <h1 className="flex items-center gap-2 text-2xl font-extrabold bg-gradient-to-r from-sky-500 to-indigo-500 bg-clip-text text-transparent">
           <span>💬</span> Facility's Help Desk
         </h1>
         <div className="flex items-center gap-4">
-          <div className="h-8 w-8 rounded-full bg-sky-200 flex items-center justify-center text-sky-700 font-bold">U</div>
+          <button className="h-8 w-8 rounded-full bg-sky-200 flex items-center justify-center text-sky-700 font-bold hover:bg-sky-300 transition">
+            U
+          </button>
         </div>
       </header>
 
       <main className="mx-auto max-w-6xl p-6 space-y-6">
+        {/* Enhanced Search and Filter Section */}
         <div className="flex flex-wrap items-center justify-between gap-4">
           <div className="flex flex-wrap items-center gap-4">
-            <input
-              type="text"
-              placeholder="Search cases..."
-              className="rounded border border-gray-300 px-3 py-2 text-sm focus:border-sky-500 focus:outline-none"
-            />
-            <select className="rounded border border-gray-300 px-3 py-2 text-sm focus:border-sky-500 focus:outline-none">
+            <div className="relative">
+              <input
+                type="text"
+                placeholder="Search cases..."
+                className="rounded-lg border border-gray-300 px-3 py-2 pl-10 text-sm focus:border-sky-500 focus:outline-none transition"
+              />
+              <span className="absolute left-3 top-2.5 text-gray-400">
+                🔍
+              </span>
+            </div>
+            <select className="rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-sky-500 focus:outline-none transition">
               <option>Newest</option>
               <option>Oldest</option>
             </select>
           </div>
           <div className="flex flex-wrap items-center gap-2">
-            <button className="rounded-full border border-gray-300 px-3 py-1 text-sm text-gray-600 hover:bg-gray-100 transition">
-              Filters:
-            </button>
-            <button className="rounded-full border border-gray-300 px-3 py-1 text-sm text-gray-600 hover:bg-gray-100 transition">
-              Category
-            </button>
-            <button className="rounded-full border border-gray-300 px-3 py-1 text-sm text-gray-600 hover:bg-gray-100 transition">
-              Location
-            </button>
             <button className="rounded-full bg-sky-500 px-4 py-2 text-sm font-semibold text-white hover:bg-sky-600 transition">
               + New Case
             </button>
           </div>
         </div>
 
+        {/* Active/Resolved Toggle */}
         <div className="flex items-center gap-4">
           <div className="flex gap-2 rounded-full bg-gray-100 p-1">
             <button
@@ -175,20 +176,23 @@ export default function DashboardPage() {
           </div>
         </div>
 
+        {/* Ticket List */}
         {loading ? (
-          <div className="flex justify-center">Loading...</div>
+          <div className="flex justify-center py-8">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-sky-500"></div>
+          </div>
         ) : error ? (
           <div className="rounded bg-red-100 p-4 text-red-700">{error}</div>
         ) : (
-          <ul className="space-y-6">
+          <ul className="space-y-4">
             {tickets.map((ticket) => (
               <li key={`${ticket.ticket_id}-${ticket.ticket_number ?? ''}`}>
                 <Link href={`/dashboard/${ticket.ticket_id}`}>
-                  <div className="group relative cursor-pointer rounded-2xl border border-gray-200 bg-white p-5 shadow transition hover:shadow-lg">
+                  <div className="group relative cursor-pointer rounded-xl border border-gray-200 bg-white p-5 shadow-sm transition hover:shadow-md">
                     <div className="flex justify-between items-start mb-3">
                       <div>
                         <h2 className="text-lg font-bold text-gray-800">{ticket.title}</h2>
-                        <p className="mt-1 text-sm text-gray-500">{ticket.description || 'No description'}</p>
+                        <p className="mt-1 text-sm text-gray-500 line-clamp-2">{ticket.description || 'No description'}</p>
                       </div>
                       <span className="rounded-full bg-gray-100 px-3 py-1 text-xs font-semibold text-gray-700 whitespace-nowrap">
                         Ticket #: {ticket.ticket_number ?? 'UNKNOWN'}
