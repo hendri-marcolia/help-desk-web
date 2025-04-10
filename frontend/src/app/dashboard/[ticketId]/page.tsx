@@ -4,6 +4,7 @@ import { cookies } from 'next/headers';
 import ReplyForm from './ReplyForm';
 
 import React from 'react';
+import type { Reply } from '../../../api/models/Reply';
 
 export default async function TicketDetailPage({ params }: { params: Promise<{ ticketId: string }> }) {
   const { ticketId } = await params;
@@ -29,11 +30,11 @@ export default async function TicketDetailPage({ params }: { params: Promise<{ t
 
       <h2 className="mt-6 text-lg font-semibold">Replies</h2>
       <ul className="space-y-4">
-        {ticket.replies?.map((reply: any) => (
+        {ticket.replies?.map((reply: Reply) => (
           <li key={reply.id} className="rounded border p-3">
             <p>{reply.message}</p>
             <p className="text-xs text-gray-500 mt-1">
-              By {reply.author} at {new Date(reply.created_at).toLocaleString()}
+              By {reply.author} at {new Date(reply.created_at ?? '').toLocaleString()}
             </p>
           </li>
         ))}
