@@ -11,7 +11,7 @@
                 "NEXT_PUBLIC_API_URL": "https://aqjck5ht0c.execute-api.ap-southeast-1.amazonaws.com/Dev"
             }
         },
-        "staging": {
+        "preview": {
           "vars": {
               "NEXT_PUBLIC_API_URL": "https://aqjck5ht0c.execute-api.ap-southeast-1.amazonaws.com/Dev"
           }
