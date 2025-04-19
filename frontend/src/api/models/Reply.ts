@@ -3,9 +3,9 @@
 /* tslint:disable */
 /* eslint-disable */
 export type Reply = {
-    id?: string;
-    message?: string;
-    author?: string;
+    reply_id?: string;
+    reply_text?: string;
+    created_by_name?: string;
     created_at?: string;
 };
 

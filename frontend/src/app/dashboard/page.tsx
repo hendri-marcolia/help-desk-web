@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
+import Header from '../../components/Header';
 
 type Ticket = {
   ticket_id: string;
@@ -112,18 +113,7 @@ export default function DashboardPage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Enhanced Header */}
-      <header className="flex items-center justify-between border-b bg-white px-8 py-4 shadow-sm">
-        <h1 className="flex items-center gap-2 text-2xl font-extrabold bg-gradient-to-r from-sky-500 to-indigo-500 bg-clip-text text-transparent">
-          <span>💬</span> Facility&apos;s Help Desk
-        </h1>
-        <div className="flex items-center gap-4">
-          <button className="h-8 w-8 rounded-full bg-sky-200 flex items-center justify-center text-sky-700 font-bold hover:bg-sky-300 transition">
-            U
-          </button>
-        </div>
-      </header>
-
+      <Header />
       <main className="mx-auto max-w-6xl p-6 space-y-6">
         {/* Enhanced Search and Filter Section */}
         <div className="flex flex-wrap items-center justify-between gap-4">
