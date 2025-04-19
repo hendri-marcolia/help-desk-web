@@ -82,3 +82,31 @@ npm run export
 - Extend `openapi.yaml` to add user management endpoints in the future.
 - Use header-based JWT auth (`Authorization: Bearer <token>`).
 - Tokens stored in localStorage.
+
+## To-Be-Work-On
+Ticket Details Page
+
+Clicking a ticket opens a detailed view
+Shows full description, replies, and status
+Allows posting replies, editing ticket (if permitted), update status by marking replies as solution (if permitted)
+
+Create Ticket Page
+Form to create a new ticket
+Fields: title, description, category, facility
+Submits to /tickets/create
+
+User Management (Admin only)
+List users
+Create/edit/delete users
+Generate login codes
+Authentication Enhancements
+
+Token refresh flow
+Logout functionality
+Protect routes based on auth state and role
+Polish & Responsiveness
+
+Improve mobile layout
+Accessibility improvements
+Consistent styling across pages
+Optional: Notifications, Profile page, etc.
