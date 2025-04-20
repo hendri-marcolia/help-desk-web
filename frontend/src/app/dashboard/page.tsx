@@ -69,7 +69,7 @@ export default function DashboardPage() {
       }).then(async (response) => {
         console.log('Tickets fetched:', response);
         // const data = await response.json();
-        let ticketList: TicketList = response
+        const ticketList: TicketList = response
         // if (Array.isArray(data)) {
         //     ticketList = data as Ticket[];
         // } else if (data && Array.isArray((data).tickets)) {
