@@ -1,5 +1,5 @@
 'use client';
-
+export const runtime = 'edge';
 import React from 'react';
 import { Reply } from '../../../api/models/Reply';
 import TokenHandler from './TokenHandler';
