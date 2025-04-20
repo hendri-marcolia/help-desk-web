@@ -13,10 +13,25 @@ export class TicketsService {
      * @returns TicketList List of tickets
      * @throws ApiError
      */
-    public static getTickets(): CancelablePromise<TicketList> {
+    public static getTickets({filter} : {
+        filter?: {
+            status?: string;
+            category?: string;
+            facility?: string;
+            limit?: number;
+            start_key?: string;
+        },
+    }): CancelablePromise<TicketList> {
         return __request(OpenAPI, {
             method: 'GET',
             url: '/tickets',
+            query: {
+                'limit': filter?.limit,
+                'start_key': filter?.start_key,
+                'status': filter?.status,
+                'category': filter?.category,
+                'facility': filter?.facility,
+            },
         });
     }
     /**
@@ -46,7 +61,7 @@ export class TicketsService {
      * @returns Ticket Ticket details
      * @throws ApiError
      */
-    public static getTickets1({
+    public static getTicketById({
         ticketId,
     }: {
         ticketId: string,

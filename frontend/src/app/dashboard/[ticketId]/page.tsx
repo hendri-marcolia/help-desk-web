@@ -6,7 +6,7 @@ import { Reply } from '../../../api/models/Reply';
 import TokenHandler from './TokenHandler';
 import ReplyForm from './ReplyForm';
 import Header from '../../../components/Header';
-import { Ticket } from '@/api';
+import { Ticket, TicketsService } from '@/api';
 
 export default function TicketDetailPage({ params }: { params: Promise<{ ticketId: string }> }) {
   const { ticketId } = React.use(params);
@@ -25,23 +25,25 @@ export default function TicketDetailPage({ params }: { params: Promise<{ ticketI
 
 function TicketDetail({ ticketId, token }: { ticketId: string; token: string }) {
   const apiUrl = `${process.env.NEXT_PUBLIC_API_URL}/tickets/${ticketId}`;
-  const [ticket, setTicket] = React.useState<Ticket>({});
+  const [ticket, setTicket] = React.useState<Ticket | null>(null);
   const [error, setError] = React.useState<string | null>(null);
 
   React.useEffect(() => {
     const fetchTicket = async () => {
       try {
-        const response = await fetch(apiUrl, {
-          headers: { 'Authorization': `Bearer ${token}` },
+        TicketsService.getTicketById({ticketId: ticketId}).then(async (response) => {
+          console.log('Ticket fetched:', response);
+
+          // const response = await fetch(apiUrl, {
+          //   headers: { 'Authorization': `Bearer ${token}` },
+          // });
+
+          if (!response) {
+            setError(`Failed to load ticket. TicketID : ${ticketId}`);
+            return;
+          }
+          setTicket(response);
         });
-
-        if (!response.ok) {
-          setError(`Failed to load ticket. TicketID : ${ticketId}`);
-          return;
-        }
-
-        const data = await response.json();
-        setTicket(data);
       } catch (error) {
         if (error instanceof Error) {
           setError(`Error fetching ticket: ${error.message}`);
@@ -62,7 +64,7 @@ function TicketDetail({ ticketId, token }: { ticketId: string; token: string }) 
     );
   }
 
-  if (!ticket.title) {
+  if (!ticket) {
     return (
       <div className="flex items-center justify-center h-screen">
         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-500"></div>
@@ -76,6 +78,7 @@ function TicketDetail({ ticketId, token }: { ticketId: string; token: string }) 
       <p className="text-gray-600">{ticket.description}</p>
       <p className="text-sm text-gray-500">Status: {ticket.status}</p>
       <p className="text-sm text-gray-500">Created: {new Date(ticket.created_at ?? '').toLocaleString()}</p>
+      <p className="text-sm text-gray-500">Author: { ticket.created_by_name || ticket.created_by }</p>
 
       <h2 className="mt-6 text-lg font-semibold">Replies</h2>
       <ul className="space-y-4">

@@ -3,4 +3,8 @@
 /* tslint:disable */
 /* eslint-disable */
 import type { Ticket } from './Ticket';
-export type TicketList = Array<Ticket>;
+interface TicketListResponse {
+    tickets: Array<Ticket>;
+    next_start_key?: string;
+}
+export type TicketList =  TicketListResponse;

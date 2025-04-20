@@ -3,6 +3,7 @@
 import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import Header from '../../components/Header';
+import { TicketList, TicketsService } from '@/api';
 
 type Ticket = {
   ticket_id: string;
@@ -56,35 +57,43 @@ export default function DashboardPage() {
   const fetchTicketsByStatus = async (status: 'open' | 'closed') => {
     setLoading(true);
     try {
-      const token = localStorage.getItem('token') ?? '';
-      const apiUrl = `${process.env.NEXT_PUBLIC_API_URL}/tickets?status=${status}`;
-      const response = await fetch(apiUrl, {
-        headers: { 'Authorization': `Bearer ${token}` },
+    //   const token = localStorage.getItem('token') ?? '';
+    //   const apiUrl = `${process.env.NEXT_PUBLIC_API_URL}/tickets?status=${status}`;
+    //   const response = await fetch(apiUrl, {
+    //     headers: { 'Authorization': `Bearer ${token}` },
+    //   });
+      TicketsService.getTickets({
+        filter: {
+            status: status
+            },
+      }).then(async (response) => {
+        console.log('Tickets fetched:', response);
+        // const data = await response.json();
+        let ticketList: TicketList = response
+        // if (Array.isArray(data)) {
+        //     ticketList = data as Ticket[];
+        // } else if (data && Array.isArray((data).tickets)) {
+        //     ticketList = (data).tickets;
+        // } else {
+        //     ticketList = [];
+        // }
+
+        const enriched = await Promise.all(
+            ticketList.tickets.map(async (ticket: Ticket) => {
+            const authorName = await getAuthorName(ticket);
+            return { ...ticket, _authorName: authorName };
+            })
+        );
+
+        if (status === 'open') {
+            setActiveTickets(enriched);
+        } else {
+            setResolvedTickets(enriched);
+            setResolvedLoaded(true);
+        }
+        setTickets(enriched);
       });
-      const data = await response.json();
-      let ticketList: Ticket[] = [];
-      if (Array.isArray(data)) {
-        ticketList = data as Ticket[];
-      } else if (data && Array.isArray((data).tickets)) {
-        ticketList = (data).tickets;
-      } else {
-        ticketList = [];
-      }
-
-      const enriched = await Promise.all(
-        ticketList.map(async (ticket: Ticket) => {
-          const authorName = await getAuthorName(ticket);
-          return { ...ticket, _authorName: authorName };
-        })
-      );
-
-      if (status === 'open') {
-        setActiveTickets(enriched);
-      } else {
-        setResolvedTickets(enriched);
-        setResolvedLoaded(true);
-      }
-      setTickets(enriched);
+      
     } catch (err) {
       console.error('Failed to fetch tickets:', err);
       setError('Failed to load tickets.');

@@ -4,11 +4,17 @@
 /* eslint-disable */
 import type { Reply } from './Reply';
 export type Ticket = {
-    id?: string;
-    title?: string;
+    ticket_id: string;
+    title: string;
+    status: string;
+    created_at: string;
     description?: string;
-    status?: string;
-    created_at?: string;
+    category?: string;
+    facility?: string;
+    priority?: string;
+    ticket_number?: string;
+    created_by?: string;
+    created_by_name?: string;
     updated_at?: string;
     replies?: Array<Reply>;
 };
