@@ -4,6 +4,7 @@ import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import Header from '../../components/Header';
 import { TicketList, TicketsService } from '@/api';
+import { useDebounce } from 'use-debounce';
 
 type Ticket = {
   ticket_id: string;
@@ -53,47 +54,34 @@ export default function DashboardPage() {
   const [error, setError] = useState<string | null>(null);
   const [statusFilter, setStatusFilter] = useState<'open' | 'closed'>('open');
   const [resolvedLoaded, setResolvedLoaded] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [debouncedSearchQuery] = useDebounce(searchQuery, 500);
 
-  const fetchTicketsByStatus = async (status: 'open' | 'closed') => {
+  const fetchTicketsByStatus = async (status: 'open' | 'closed', search?: string) => {
     setLoading(true);
     try {
-    //   const token = localStorage.getItem('token') ?? '';
-    //   const apiUrl = `${process.env.NEXT_PUBLIC_API_URL}/tickets?status=${status}`;
-    //   const response = await fetch(apiUrl, {
-    //     headers: { 'Authorization': `Bearer ${token}` },
-    //   });
       TicketsService.getTickets({
         filter: {
-            status: status
-            },
+          status: status,
+          search: search ?? debouncedSearchQuery,
+        },
       }).then(async (response) => {
-        console.log('Tickets fetched:', response);
-        // const data = await response.json();
-        const ticketList: TicketList = response
-        // if (Array.isArray(data)) {
-        //     ticketList = data as Ticket[];
-        // } else if (data && Array.isArray((data).tickets)) {
-        //     ticketList = (data).tickets;
-        // } else {
-        //     ticketList = [];
-        // }
-
+        const ticketList: TicketList = response;
         const enriched = await Promise.all(
-            ticketList.tickets.map(async (ticket: Ticket) => {
+          ticketList.tickets.map(async (ticket: Ticket) => {
             const authorName = await getAuthorName(ticket);
             return { ...ticket, _authorName: authorName };
-            })
+          })
         );
 
         if (status === 'open') {
-            setActiveTickets(enriched);
+          setActiveTickets(enriched);
         } else {
-            setResolvedTickets(enriched);
-            setResolvedLoaded(true);
+          setResolvedTickets(enriched);
+          setResolvedLoaded(true);
         }
         setTickets(enriched);
       });
-      
     } catch (err) {
       console.error('Failed to fetch tickets:', err);
       setError('Failed to load tickets.');
@@ -109,16 +97,18 @@ export default function DashboardPage() {
   useEffect(() => {
     if (statusFilter === 'open') {
       setTickets(activeTickets);
-      fetchTicketsByStatus('open');
     } else {
       if (!resolvedLoaded) {
         fetchTicketsByStatus('closed');
       } else {
         setTickets(resolvedTickets);
-        fetchTicketsByStatus('closed');
       }
     }
   }, [statusFilter, resolvedLoaded]);
+
+  useEffect(() => {
+    fetchTicketsByStatus(statusFilter, debouncedSearchQuery);
+  }, [debouncedSearchQuery, statusFilter]);
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -130,6 +120,8 @@ export default function DashboardPage() {
             <div className="relative">
               <input
                 type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Search cases..."
                 className="rounded-lg border border-gray-300 px-3 py-2 pl-10 text-sm focus:border-sky-500 focus:outline-none transition"
               />

@@ -1,5 +1,4 @@
 'use client';
-export const runtime = 'edge';
 
 import React from 'react';
 import { Reply } from '../../../api/models/Reply';
@@ -31,13 +30,7 @@ function TicketDetail({ ticketId, token }: { ticketId: string; token: string }) 
   React.useEffect(() => {
     const fetchTicket = async () => {
       try {
-        TicketsService.getTicketById({ticketId: ticketId}).then(async (response) => {
-          console.log('Ticket fetched:', response);
-
-          // const response = await fetch(apiUrl, {
-          //   headers: { 'Authorization': `Bearer ${token}` },
-          // });
-
+        TicketsService.getTicketById({ ticketId: ticketId }).then((response) => {
           if (!response) {
             setError(`Failed to load ticket. TicketID : ${ticketId}`);
             return;
@@ -73,26 +66,64 @@ function TicketDetail({ ticketId, token }: { ticketId: string; token: string }) 
   }
 
   return (
-    <div className="max-w-4xl mx-auto p-6 space-y-6">
-      <h1 className="text-2xl font-bold">{ticket.title}</h1>
-      <p className="text-gray-600">{ticket.description}</p>
-      <p className="text-sm text-gray-500">Status: {ticket.status}</p>
-      <p className="text-sm text-gray-500">Created: {new Date(ticket.created_at ?? '').toLocaleString()}</p>
-      <p className="text-sm text-gray-500">Author: { ticket.created_by_name || ticket.created_by }</p>
+    <div className="max-w-6xl mx-auto p-6 space-y-6">
+      <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
+        <div className="flex flex-col md:flex-row justify-between items-start mb-4 gap-4">
+          <div className="flex items-center gap-2">
+            <span className="px-3 py-1 rounded-full text-sm font-semibold bg-gray-100 text-gray-700 whitespace-nowrap">
+              #: {ticket.ticket_number ?? 'UNKNOWN'}
+            </span>
+            <h1 className="text-2xl font-bold text-gray-800">{ticket.title}</h1>
+          </div>
+          <div className="flex items-center gap-2 flex-wrap">
+            <span className={`px-3 py-1 rounded-full text-sm font-semibold ${
+                ticket.status === 'active' || ticket.status === 'open'
+                  ? 'bg-orange-100 text-orange-800'
+                  : ticket.status === 'closed'
+                  ? 'bg-gray-200 text-gray-800'
+                  : 'bg-yellow-100 text-yellow-800'
+              }`}>
+                {ticket.status?.toUpperCase() || 'ACTIVE'}
+              </span>
+            <span className="px-3 py-1 rounded-full text-sm font-semibold bg-blue-100 text-blue-800">
+              {ticket.facility?.toUpperCase() || 'UNKNOWN'}
+            </span>
+            <span className="px-3 py-1 rounded-full text-sm font-semibold bg-green-100 text-green-800">
+              {ticket.category?.toUpperCase() || 'UNKNOWN'}
+            </span>
+          </div>
+        </div>
+        <p className="text-gray-600 whitespace-pre-wrap mb-4">{ticket.description}</p>
+        <div className="flex flex-wrap gap-4 text-sm text-gray-500 mb-6">
+          <span className="flex items-center gap-1">
+            <span className="text-gray-400">Created:</span>
+            {new Date(ticket.created_at ?? '').toLocaleString()}
+          </span>
+          <span className="flex items-center gap-1">
+            <span className="text-gray-400">By:</span>
+            {ticket.created_by_name || ticket.created_by}
+          </span>
+        </div>
 
-      <h2 className="mt-6 text-lg font-semibold">Replies</h2>
-      <ul className="space-y-4">
-        {ticket.replies?.map((reply: Reply) => (
-          <li key={reply.reply_id} className="rounded border p-3">
-            <p>{reply.reply_text}</p>
-            <p className="text-xs text-gray-500 mt-1">
-              By {reply.created_by_name} at {new Date(reply.created_at ?? '').toLocaleString()}
-            </p>
-          </li>
-        ))}
-      </ul>
+        <div className="border-t border-gray-200 pt-6">
+          <h2 className="text-lg font-semibold mb-4">Replies</h2>
+          <ul className="space-y-4">
+            {ticket.replies?.map((reply: Reply) => (
+              <li key={reply.reply_id} className="rounded-lg border border-gray-200 p-4 bg-gray-50">
+                <p className="text-gray-700 whitespace-pre-wrap">{reply.reply_text}</p>
+                <p className="text-xs text-gray-500 mt-2 flex items-center gap-1">
+                  <span className="text-gray-400">By {reply.created_by_name}</span>
+                  at {new Date(reply.created_at ?? '').toLocaleString()}
+                </p>
+              </li>
+            ))}
+          </ul>
 
-      <ReplyForm ticketId={ticketId} />
+          <div className="mt-6">
+            <ReplyForm ticketId={ticketId} />
+          </div>
+        </div>
+      </div>
     </div>
   );
 }
