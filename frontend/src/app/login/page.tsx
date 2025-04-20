@@ -137,6 +137,7 @@ export default function LoginPage() {
             <label className="mb-1 block text-sm font-medium text-gray-700">Username</label>
             <input
               type="text"
+              name='username'
               value={username}
               onChange={(e) => setUsername(e.target.value)}
               onKeyDown={(e) => e.key === 'Enter' && handleLogin()}
@@ -149,6 +150,7 @@ export default function LoginPage() {
             <label className="mb-1 block text-sm font-medium text-gray-700">Password</label>
             <div className="flex gap-2">
               <input
+                name='password'
                 type={showPassword ? 'text' : 'password'}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
