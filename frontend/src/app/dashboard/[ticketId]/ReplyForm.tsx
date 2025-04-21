@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import { toast } from 'react-toastify';
+import ConfirmationDialog from '@/components/ConfirmationDialog';
 
 interface ReplyFormProps {
   ticketId: string;
@@ -9,7 +10,6 @@ interface ReplyFormProps {
 
 const ReplyForm: React.FC<ReplyFormProps> = ({ ticketId }: ReplyFormProps) => {
   const [replyText, setReplyText] = useState("");
-  const [isConfirmOpen, setIsConfirmOpen] = useState(false);
 
   const handleReply = async () => {
     try {
@@ -46,21 +46,23 @@ const ReplyForm: React.FC<ReplyFormProps> = ({ ticketId }: ReplyFormProps) => {
     }
   };
 
+  const [isConfirmationOpen, setIsConfirmationOpen] = useState(false);
+
   const handleConfirm = () => {
     if (replyText.length === 0) {
       toast.error("Please enter a reply.");
       return;
     }
-    setIsConfirmOpen(true);
+    setIsConfirmationOpen(true);
   };
 
   const handleConfirmSubmit = () => {
     handleReply();
-    setIsConfirmOpen(false);
+    setIsConfirmationOpen(false);
   };
 
-  const handleConfirmCancel = () => {
-    setIsConfirmOpen(false);
+  const handleCancelConfirmation = () => {
+    setIsConfirmationOpen(false);
   };
 
   return (
@@ -82,28 +84,13 @@ const ReplyForm: React.FC<ReplyFormProps> = ({ ticketId }: ReplyFormProps) => {
         </button>
       </form>
 
-      {isConfirmOpen && (
-        <div className="fixed inset-0 bg-black opacity-75 flex items-center justify-center">
-          <div className="bg-white rounded-lg p-4 shadow-lg">
-            <p className="text-lg font-semibold mb-4">Confirm Reply</p>
-            <p className="text-gray-600 mb-6">Are you sure you want to post this reply?</p>
-            <div className="flex justify-end gap-2">
-              <button
-                onClick={handleConfirmCancel}
-                className="px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-lg"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={handleConfirmSubmit}
-                className="px-4 py-2 text-sm bg-sky-500 text-white hover:bg-sky-600 rounded-lg"
-              >
-                Confirm
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+      <ConfirmationDialog
+        isOpen={isConfirmationOpen}
+        title="Confirm Reply"
+        message="Are you sure you want to post this reply?"
+        onConfirm={handleConfirmSubmit}
+        onCancel={handleCancelConfirmation}
+      />
     </div>
   );
 };

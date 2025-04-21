@@ -5,6 +5,7 @@ import Link from 'next/link';
 import Header from '../../components/Header';
 import { TicketList, TicketsService } from '@/api';
 import { useDebounce } from 'use-debounce';
+import TicketForm from '@/components/TicketForm';
 
 type Ticket = {
   ticket_id: string;
@@ -56,6 +57,16 @@ export default function DashboardPage() {
   const [resolvedLoaded, setResolvedLoaded] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [debouncedSearchQuery] = useDebounce(searchQuery, 500);
+  const [isNewCaseFormOpen, setIsNewCaseFormOpen] = useState(false);
+
+  const handleCreateTicket = (data: any) => {
+    console.log('New ticket data:', data);
+    setIsNewCaseFormOpen(false);
+  };
+
+  const handleCancelTicket = () => {
+    setIsNewCaseFormOpen(false);
+  };
 
   const fetchTicketsByStatus = async (status: 'open' | 'closed', search?: string) => {
     setLoading(true);
@@ -135,39 +146,21 @@ export default function DashboardPage() {
             </select>
           </div>
           <div className="flex flex-wrap items-center gap-2">
-            <button className="rounded-full bg-sky-500 px-4 py-2 text-sm font-semibold text-white hover:bg-sky-600 transition">
+            <button
+              className="rounded-full bg-sky-500 px-4 py-2 text-sm font-semibold text-white hover:bg-sky-600 transition"
+              onClick={() => setIsNewCaseFormOpen(true)}
+            >
               + New Case
             </button>
           </div>
         </div>
 
-        {/* Active/Resolved Toggle */}
-        <div className="flex items-center gap-4">
-          <div className="flex gap-2 rounded-full bg-gray-100 p-1">
-            <button
-              onClick={() => setStatusFilter('open')}
-              className={`rounded-full px-4 py-2 text-sm font-semibold transition ${
-                statusFilter === 'open'
-                  ? 'text-sky-600 bg-white shadow'
-                  : 'text-gray-500 hover:text-sky-600'
-              }`}
-            >
-              Active Cases
-            </button>
-            <button
-              onClick={() => setStatusFilter('closed')}
-              className={`rounded-full px-4 py-2 text-sm font-semibold transition ${
-                statusFilter === 'closed'
-                  ? 'text-sky-600 bg-white shadow'
-                  : 'text-gray-500 hover:text-sky-600'
-              }`}
-            >
-              Resolved Cases
-            </button>
+        {isNewCaseFormOpen && (
+          <div className="bg-white rounded-xl shadow-md p-6">
+            <TicketForm onSubmit={handleCreateTicket} onCancel={handleCancelTicket} />
           </div>
-        </div>
+        )}
 
-        {/* Ticket List */}
         {loading ? (
           <div className="flex justify-center py-8">
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-sky-500"></div>

@@ -89,7 +89,8 @@ export class TicketsService {
         requestBody: {
             title?: string;
             description?: string;
-            status?: string;
+            facility?: string;
+            category?: string;
         },
     }): CancelablePromise<Ticket> {
         return __request(OpenAPI, {

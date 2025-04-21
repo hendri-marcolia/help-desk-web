@@ -86,8 +86,6 @@ npm run export
 ## To-Be-Work-On
 Ticket Details Page
 
-Clicking a ticket opens a detailed view
-Shows full description, replies, and status
 Allows posting replies, editing ticket (if permitted), update status by marking replies as solution (if permitted)
 
 Create Ticket Page
@@ -101,8 +99,6 @@ Create/edit/delete users
 Generate login codes
 Authentication Enhancements
 
-Token refresh flow
-Logout functionality
 Protect routes based on auth state and role
 Polish & Responsiveness
 
