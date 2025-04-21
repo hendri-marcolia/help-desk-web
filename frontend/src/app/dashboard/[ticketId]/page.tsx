@@ -142,27 +142,80 @@ function TicketDetail({ ticketId, token }: { ticketId: string; token: string }) 
                 </span>
               </div>
               <div className="mt-2 flex justify-end">
-                <button
-                  className="inline-flex items-center rounded-md bg-sky-500 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-sky-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-500"
-                  onClick={() => setIsEditFormOpen(true)}
-                >
-                  <svg className="-ml-0.5 mr-1.5 h-5 w-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-                    <path d="M2.695 14.763l-1.292 1.292a1.335 1.335 0 00-.373.969V19.5a.5.5 0 00.5.5h2.121a.375.375 0 00.264-.643l-1.293-1.292c-.112-.112-.305-.112-.417 0zM19.477 5.425l-7.647 7.648a.5.5 0 01-.707 0l-2.192-2.192a.5.5 0 010-.707l7.649-7.647a.5.5 0 01.707 0l2.191 2.191a.5.5 0 010 .707z" />
-                  </svg>
-                  Edit
-                </button>
+                {((localStorage.getItem('role') === 'admin') || (ticket.created_by === localStorage.getItem('user_id'))) && (
+                  <>
+                    {ticket.status === 'closed' && (
+                      <button
+                        className="inline-flex items-center rounded-md bg-green-500 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-green-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-500 mr-2"
+                        onClick={async () => {
+                          try {
+                            await TicketsService.patchTicketsSolution({ ticketId: ticketId, requestBody: { status: 'open' } });
+                            toast.success('Ticket reopened successfully!');
+                            fetchTicket();
+                          } catch (error) {
+                            console.error('Failed to reopen ticket:', error);
+                            toast.error('Failed to reopen ticket.');
+                          }
+                        }}
+                      >
+                        Reopen
+                      </button>
+                    )}
+                    <button
+                      className="inline-flex items-center rounded-md bg-sky-500 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-sky-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-500"
+                      onClick={() => setIsEditFormOpen(true)}
+                    >
+                      <svg className="-ml-0.5 mr-1.5 h-5 w-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                        <path d="M2.695 14.763l-1.292 1.292a1.335 1.335 0 00-.373.969V19.5a.5.5 0 00.5.5h2.121a.375.375 0 00.264-.643l-1.293-1.292c-.112-.112-.305-.112-.417 0zM19.477 5.425l-7.647 7.648a.5.5 0 01-.707 0l-2.192-2.192a.5.5 0 010-.707l7.649-7.647a.5.5 0 01.707 0l2.191 2.191a.5.5 0 010 .707z" />
+                      </svg>
+                      Edit
+                    </button>
+                  </>
+                )}
               </div>
 
               <div className="border-t border-gray-200 pt-6">
                 <h2 className="text-lg font-semibold mb-4">Replies</h2>
                 <ul className="space-y-6">
-                  {ticket.replies?.map((reply: Reply) => (
-                    <li key={reply.reply_id} className="rounded-lg border border-gray-200 p-4 bg-gray-50">
+                  {ticket.replies?.sort((a, b) => {
+                    if (ticket.status === 'closed' && ticket.solution_reply_id) {
+                      if (a.reply_id === ticket.solution_reply_id) {
+                        return -1;
+                      }
+                      if (b.reply_id === ticket.solution_reply_id) {
+                        return 1;
+                      }
+                    }
+                    return 0;
+                  }).map((reply: Reply) => (
+                    <li key={reply.reply_id} className={`rounded-lg border border-gray-200 p-4 ${reply.reply_id === ticket.solution_reply_id ? 'bg-green-50' : 'bg-gray-50'}`}>
                       <p className="text-gray-700 whitespace-pre-wrap text-base">{reply.reply_text}</p>
-                      <p className="text-xs text-gray-500 mt-2 flex items-center gap-1">
-                        <span className="text-gray-400">By {reply.created_by_name}</span>
-                        at {new Date(reply.created_at ?? '').toLocaleString()}
-                      </p>
+                      <div className="flex items-center justify-between">
+                        <p className="text-xs text-gray-500 mt-2 flex items-center gap-1">
+                          <span className="text-gray-400">By {reply.created_by_name}</span>
+                          at {new Date(reply.created_at ?? '').toLocaleString()}
+                        </p>
+                        {ticket.status !== 'closed' && ((localStorage.getItem('role') === 'admin') || (ticket.created_by === localStorage.getItem('user_id'))) && (
+                          <button
+                            className="inline-flex items-center text-sky-500 hover:text-sky-700 text-sm"
+                            onClick={async () => {
+                              try {
+                                await TicketsService.patchTicketsSolution({ ticketId: ticketId, requestBody: { reply_id: reply.reply_id } });
+                                toast.success('Reply marked as solution!');
+                                fetchTicket();
+                              } catch (error) {
+                                console.error('Failed to mark reply as solution:', error);
+                                toast.error('Failed to mark reply as solution.');
+                              }
+                            }}
+                          >
+                            <svg className="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
+                            </svg>
+                            Mark as Solution
+                          </button>
+                        )}
+                      </div>
                     </li>
                   ))}
                 </ul>

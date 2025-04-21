@@ -156,12 +156,9 @@ export default function DashboardPage() {
                     type="text"
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    placeholder="Search cases..."
-                    className="rounded-lg border border-gray-300 px-3 py-2 pl-10 text-sm focus:border-sky-500 focus:outline-none transition"
+                    placeholder="🔍 Search cases..."
+className="rounded-lg border border-gray-300 px-3 py-2 pl-12 text-sm focus:border-sky-500 focus:outline-none transition pr-7"
                   />
-                  <span className="absolute left-3 top-2.5 text-gray-400">
-                    🔍
-                  </span>
                 </div>
                 <select className="rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-sky-500 focus:outline-none transition">
                   <option>Newest</option>
@@ -171,7 +168,7 @@ export default function DashboardPage() {
               <div className="flex flex-wrap items-center gap-2">
                 <button
                   className="rounded-full bg-sky-500 px-4 py-2 text-sm font-semibold text-white hover:bg-sky-600 transition"
-                  onClick={() => setIsNewCaseFormOpen(true)}
+                  onClick={() => setIsNewCaseFormOpen(isNewCaseFormOpen => !isNewCaseFormOpen)}
                 >
                   + New Case
                 </button>

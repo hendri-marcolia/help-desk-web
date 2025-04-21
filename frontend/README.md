@@ -6,14 +6,14 @@ A professional, clean web frontend for the Help Desk system built with **Next.js
 
 ## Role Matrix
 
-| Feature                     | Admin        | Ticket Owner (User) | Other Users   |
+| Feature                     | Admin        | Ticket Owner (User) | All Users   |
 |-----------------------------|--------------|---------------------|---------------|
 | Login                       | ✅           | ✅                  | ✅            |
 | View all tickets            | ✅           | ✅                  | ✅            |
 | Create ticket               | ✅           | ✅                  | ✅            |
 | Edit ticket info/status     | ✅ (any)     | ✅ (own)            | ❌            |
 | Post replies                | ✅           | ✅                  | ✅            |
-| Mark ticket as resolved     | ✅           | ✅ (own)            | ❌            |
+| Mark ticket as resolved     | ✅ (any)     | ✅ (own)            | ❌            |
 | Manage users                | ✅           | ❌                  | ❌            |
 | Generate login codes        | ✅           | ❌                  | ❌            |
 
@@ -84,10 +84,6 @@ npm run export
 - Tokens stored in localStorage.
 
 ## To-Be-Work-On
-Ticket Details Page
-
-Allows posting replies, editing ticket (if permitted), update status by marking replies as solution (if permitted)
-
 User Management (Admin only)
 List users
 Create/edit/delete users

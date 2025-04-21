@@ -63,7 +63,7 @@ export default function LoginPage() {
       checkToken(); // Check token after login
     } catch (error) {
       console.error('Login failed:', error);
-      toast.error('Login failed');
+      toast.error('Login failed: ' + (error as Error).message);
     } finally {
       setLoading(false);
     }

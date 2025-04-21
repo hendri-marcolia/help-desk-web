@@ -16,6 +16,7 @@ export type Ticket = {
     created_by?: string;
     created_by_name?: string;
     updated_at?: string;
+    solution_reply_id?: string;
     replies?: Array<Reply>;
 };
 

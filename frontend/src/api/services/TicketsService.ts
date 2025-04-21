@@ -138,7 +138,7 @@ export class TicketsService {
     }: {
         ticketId: string,
         requestBody: {
-            solution?: string;
+            reply_id?: string;
             status?: string;
         },
     }): CancelablePromise<Ticket> {
