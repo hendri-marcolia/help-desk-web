@@ -14,23 +14,28 @@ export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
 
-  useEffect(() => {
-    const checkToken = async () => {
-      const token = localStorage.getItem('token');
-      if (token) {
-        try {
-          const response = await import('@/api').then(({ AuthService }) =>
-            AuthService.getAuthMe()
-          );
-          if (response) {
-            router.push('/dashboard');
-          }
-        } catch (error) {
-          console.error('Token validation failed:', error);
-          // Token is invalid, allow login
+  const checkToken = async () => {
+    const token = localStorage.getItem('token');
+    if (token) {
+      try {
+        const response = await import('@/api').then(({ AuthService }) =>
+          AuthService.getAuthMe()
+        );
+        console.log('Token validation response:', response);
+        if (response) {
+          localStorage.setItem('user_id', response.user_id ?? '');
+          localStorage.setItem('username', response.username ?? '');
+          localStorage.setItem('role', response.role ?? '');
+          router.push('/dashboard');
         }
+      } catch (error) {
+        console.error('Token validation failed:', error);
+        // Token is invalid, allow login
       }
-    };
+    }
+  };
+
+  useEffect(() => {
     checkToken();
   }, [router]);
 
@@ -54,10 +59,11 @@ export default function LoginPage() {
       toast.info("Login success, redirecting to dashboard...");
       localStorage.setItem('token', response.token ?? '');
       localStorage.setItem('refresh_token', response.refresh_token ?? '');
-      router.push('/dashboard');
+      // router.push('/dashboard');
+      checkToken(); // Check token after login
     } catch (error) {
       console.error('Login failed:', error);
-      toast.error('Login failed');
+      toast.error('Login failed: ' + (error as Error).message);
     } finally {
       setLoading(false);
     }
@@ -131,6 +137,7 @@ export default function LoginPage() {
             <label className="mb-1 block text-sm font-medium text-gray-700">Username</label>
             <input
               type="text"
+              name='username'
               value={username}
               onChange={(e) => setUsername(e.target.value)}
               onKeyDown={(e) => e.key === 'Enter' && handleLogin()}
@@ -143,6 +150,7 @@ export default function LoginPage() {
             <label className="mb-1 block text-sm font-medium text-gray-700">Password</label>
             <div className="flex gap-2">
               <input
+                name='password'
                 type={showPassword ? 'text' : 'password'}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
@@ -187,8 +195,8 @@ export default function LoginPage() {
                   <path
                     className="opacity-75"
                     fill="currentColor"
-                    d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z">
-                  </path>
+                    d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
+                  ></path>
                 </svg>
                 Loading...
               </span>

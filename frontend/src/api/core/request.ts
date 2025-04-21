@@ -3,6 +3,7 @@
 /* tslint:disable */
 /* eslint-disable */
 import axios from 'axios';
+import { AuthService } from '../services/AuthService';
 
 const axiosInstance = axios.create({
     timeout: 10000, // 10 seconds timeout
@@ -253,7 +254,7 @@ export const getResponseBody = (response: AxiosResponse<any>): any => {
     return undefined;
 };
 
-export const catchErrorCodes = (options: ApiRequestOptions, result: ApiResult): void => {
+export const catchErrorCodes = (options: ApiRequestOptions, result: ApiResult): { type: string; status: number } | undefined => {
     const errors: Record<number, string> = {
         400: 'Bad Request',
         401: 'Unauthorized',
@@ -267,24 +268,40 @@ export const catchErrorCodes = (options: ApiRequestOptions, result: ApiResult): 
 
     const error = errors[result.status];
     if (error) {
+        if (error === 'Unauthorized') {
+            return {
+              type: 'UNAUTHORIZED',
+              status: result.status,
+            };
+        }
         throw new ApiError(options, result, error);
     }
 
     if (!result.ok) {
-        const errorStatus = result.status ?? 'unknown';
-        const errorStatusText = result.statusText ?? 'unknown';
-        const errorBody = (() => {
-            try {
-                return JSON.stringify(result.body, null, 2);
-            } catch (e) {
-                return undefined;
-            }
-        })();
-
-        throw new ApiError(options, result,
-            `Generic Error: status: ${errorStatus}; status text: ${errorStatusText}; body: ${errorBody}`
-        );
+        throw new ApiError(options, result, `Generic Error: status: ${result.status}; status text: ${result.statusText}; body: ${JSON.stringify(result.body, null, 2)}`);
     }
+
+    return undefined; // No error
+};
+
+const refreshToken = async (): Promise<string | null> => {
+  try {
+    const refreshToken = localStorage.getItem('refresh_token');
+    if (refreshToken === null || refreshToken === undefined) return null;
+
+    const response = await AuthService.postAuthRefresh({
+      requestBody: { refresh_token: refreshToken },
+    });
+
+    const newToken = response.token;
+    if (newToken !== null && newToken !== undefined) {
+      localStorage.setItem('token', newToken);
+    }
+    return newToken ?? null;
+  } catch (error) {
+    console.error('Token refresh failed:', error);
+    return null;
+  }
 };
 
 /**
@@ -316,9 +333,24 @@ export const request = <T>(config: OpenAPIConfig, options: ApiRequestOptions, ax
                     body: responseHeader ?? responseBody,
                 };
 
-                catchErrorCodes(options, result);
-
-                resolve(result.body);
+                const error = catchErrorCodes(options, result);
+                if (error?.type === 'UNAUTHORIZED') {
+                    const newToken = await refreshToken();
+                    if (newToken) {
+                      // Retry the original request with the new token
+                      const newHeaders = await getHeaders(config, options, formData);
+                      newHeaders['Authorization'] = `Bearer ${newToken}`;
+                      const newResponse = await sendRequest<T>(config, options, url, body, formData, newHeaders, onCancel, axiosClient);
+                      const newResponseBody = getResponseBody(newResponse);
+                      resolve(newResponseBody);
+                    } else {
+                      localStorage.removeItem('token');
+                      localStorage.removeItem('refresh_token');
+                      window.location.href = '/login';
+                    }
+                } else {
+                  resolve(result.body);
+                }
             }
         } catch (error) {
             reject(error);

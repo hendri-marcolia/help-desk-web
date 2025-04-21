@@ -16,6 +16,7 @@ export class TicketsService {
     public static getTickets({filter} : {
         filter?: {
             status?: string;
+            search?: string;
             category?: string;
             facility?: string;
             limit?: number;
@@ -27,6 +28,7 @@ export class TicketsService {
             url: '/tickets',
             query: {
                 'limit': filter?.limit,
+                'search': filter?.search,
                 'start_key': filter?.start_key,
                 'status': filter?.status,
                 'category': filter?.category,
@@ -87,7 +89,8 @@ export class TicketsService {
         requestBody: {
             title?: string;
             description?: string;
-            status?: string;
+            facility?: string;
+            category?: string;
         },
     }): CancelablePromise<Ticket> {
         return __request(OpenAPI, {
@@ -135,7 +138,7 @@ export class TicketsService {
     }: {
         ticketId: string,
         requestBody: {
-            solution?: string;
+            reply_id?: string;
             status?: string;
         },
     }): CancelablePromise<Ticket> {

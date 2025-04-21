@@ -3,9 +3,9 @@
 /* tslint:disable */
 /* eslint-disable */
 export type UserProfile = {
-    id?: string;
+    user_id?: string;
     username?: string;
     email?: string;
-    roles?: string;
+    role?: string;
 };
 
