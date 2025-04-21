@@ -31,7 +31,7 @@ function TicketDetail({ ticketId, token }: { ticketId: string; token: string }) 
   const [isEditFormOpen, setIsEditFormOpen] = React.useState(false);
   const [isUpdating, setIsUpdating] = React.useState(false);
 
-  const handleUpdateTicket = async (ticketId: string, data: any) => {
+  const handleUpdateTicket = async (ticketId: string, data: Ticket) => {
     setIsUpdating(true);
     try {
       const { title, description, facility, category } = data;
@@ -176,7 +176,7 @@ function TicketDetail({ ticketId, token }: { ticketId: string; token: string }) 
             <div className="bg-white rounded-xl shadow-md p-6">
               <TicketForm
                 initialValues={ticket}
-                onSubmit={(data: any) => handleUpdateTicket(ticketId, data)}
+                onSubmit={(data: Ticket) => handleUpdateTicket(ticketId, data)}
                 onCancel={() => setIsEditFormOpen(false)}
               />
             </div>

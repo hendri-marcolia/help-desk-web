@@ -88,11 +88,6 @@ Ticket Details Page
 
 Allows posting replies, editing ticket (if permitted), update status by marking replies as solution (if permitted)
 
-Create Ticket Page
-Form to create a new ticket
-Fields: title, description, category, facility
-Submits to /tickets/create
-
 User Management (Admin only)
 List users
 Create/edit/delete users

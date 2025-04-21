@@ -3,10 +3,12 @@
 import React, { useState } from 'react';
 import ConfirmationDialog from './ConfirmationDialog';
 
+import type { Ticket } from '@/api/models/Ticket';
+
 interface TicketFormProps {
-  onSubmit: (data: any) => void;
+  onSubmit: (data: Ticket) => void;
   onCancel: () => void;
-  initialValues?: any;
+  initialValues?: Ticket;
 }
 
 const TicketForm: React.FC<TicketFormProps> = ({ onSubmit, onCancel, initialValues }) => {
@@ -28,7 +30,7 @@ const TicketForm: React.FC<TicketFormProps> = ({ onSubmit, onCancel, initialValu
   };
 
   const handleConfirm = () => {
-    onSubmit({ title, description, facility, category });
+    onSubmit({ title, description, facility, category } as Ticket);
     setIsConfirmationOpen(false);
   };
 
