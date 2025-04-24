@@ -3,6 +3,7 @@
 /* tslint:disable */
 /* eslint-disable */
 import type { AuthRequest } from '../models/AuthRequest';
+import type { AuthRequestByCode } from '../models/AuthRequestByCode';
 import type { AuthResponse } from '../models/AuthResponse';
 import type { RefreshRequest } from '../models/RefreshRequest';
 import type { UserProfile } from '../models/UserProfile';
@@ -23,6 +24,23 @@ export class AuthService {
         return __request(OpenAPI, {
             method: 'POST',
             url: '/auth/login',
+            body: requestBody,
+            mediaType: 'application/json',
+        });
+    }
+    /**
+     * User login by code
+     * @returns AuthResponse Auth tokens
+     * @throws ApiError
+     */
+    public static postAuthLoginByCode({
+        requestBody,
+    }: {
+        requestBody: AuthRequestByCode,
+    }): CancelablePromise<AuthResponse> {
+        return __request(OpenAPI, {
+            method: 'POST',
+            url: '/auth/login-code',
             body: requestBody,
             mediaType: 'application/json',
         });
