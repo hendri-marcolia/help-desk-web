@@ -10,6 +10,7 @@ import type { UserProfile } from '../models/UserProfile';
 import type { CancelablePromise } from '../core/CancelablePromise';
 import { OpenAPI } from '../core/OpenAPI';
 import { request as __request } from '../core/request';
+import { UserList } from '../models/UserList';
 export class AuthService {
     /**
      * User login
@@ -71,6 +72,17 @@ export class AuthService {
         return __request(OpenAPI, {
             method: 'GET',
             url: '/auth/me',
+        });
+    }
+    /**
+     * Get current users list
+     * @returns UserProfile User profile
+     * @throws ApiError
+     */
+    public static getUsersList(): CancelablePromise<UserList> {
+        return __request(OpenAPI, {
+            method: 'GET',
+            url: '/auth/user/list',
         });
     }
     /**
