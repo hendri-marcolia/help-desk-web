@@ -86,6 +86,26 @@ export class AuthService {
         });
     }
     /**
+     * Get User Login Code
+     * @param requestBody
+     * @returns AuthRequestByCode User login code
+     * @throws ApiError
+     */
+    public static getUserLoginCode({
+        requestBody,
+    }: {
+        requestBody: {
+            username: string;
+        }
+    }): CancelablePromise<AuthRequestByCode> {
+        return __request(OpenAPI, {
+            method: 'POST',
+            url: '/auth/generate-code',
+            body: requestBody,
+            mediaType: 'application/json',
+        });
+    }
+    /**
      * Register device FCM token
      * @returns any Success
      * @throws ApiError

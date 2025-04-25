@@ -4,5 +4,6 @@
 /* eslint-disable */
 export type AuthRequestByCode = {
     code : string;
+    expires_at? : string;
 };
 
