@@ -85,10 +85,15 @@ npm run export
 
 ## To-Be-Work-On
 User Management (Admin only)
-List users
-Create/edit/delete users
-Generate login codes
-Authentication Enhancements
+edit/delete users
+
+Setting Management (Admin only)
+edit settings like
+- Enable / Disable AI Feedback
+- Change AI Prompting Role
+- Modify Facility List
+- Modift Category List
+
 
 Protect routes based on auth state and role
 Polish & Responsiveness
