@@ -8,6 +8,8 @@ import Header from '../../../components/Header';
 import { Ticket, TicketsService } from '@/api';
 import TicketForm from '@/components/TicketForm';
 import { toast } from 'react-toastify';
+import { FaCheck, FaEdit, FaMarker, FaRedo } from 'react-icons/fa';
+import ReactMarkdown from 'react-markdown';
 
 export default function TicketDetailPage({ params }: { params: Promise<{ ticketId: string }> }) {
   const { ticketId } = React.use(params);
@@ -141,6 +143,30 @@ function TicketDetail({ ticketId, token }: { ticketId: string; token: string }) 
                   {ticket.created_by_name || ticket.created_by}
                 </span>
               </div>
+              {/* Ai Feedback display */}
+              {ticket.ai_request_in_progress && (
+                <div className="flex items-start gap-2 mb-4 p-4 bg-gray-100 rounded-md">
+                  <FaMarker className="text-gray-500 animate-spin" />
+                  <div className="text-gray-700">
+                    Requesting AI Feedback... Might take around 10 - 20 seconds
+                    <div className="text-xs text-gray-500 mt-1">
+                      Request started at {new Date(ticket.ai_request_in_progress ?? '').toLocaleString()}
+                    </div>
+                  </div>
+                </div>
+              )}
+              {ticket.ai_feedback && (
+                <div className="flex items-start gap-2 mb-4 p-4 bg-gray-100 rounded-md">
+                  <FaMarker className="text-gray-500" />
+                  <div className="text-gray-700" style={{ whiteSpace: 'pre-line' }}>
+                    <div className="text-xs text-gray-500 mb-1">
+                      AI generated Feedback - Use as a reference only, do not fully depend on it.
+                    </div>
+                    <ReactMarkdown>{ticket.ai_feedback}</ReactMarkdown>
+                  </div>
+                </div>
+              )}
+              {/* End Ai Feedback display */}
               <div className="mt-2 flex justify-end">
                 {((localStorage.getItem('role') === 'admin') || (ticket.created_by === localStorage.getItem('user_id'))) && (
                   <>
@@ -158,6 +184,7 @@ function TicketDetail({ ticketId, token }: { ticketId: string; token: string }) 
                           }
                         }}
                       >
+                        <FaRedo className="mr-1" />
                         Reopen
                       </button>
                     )}
@@ -165,9 +192,7 @@ function TicketDetail({ ticketId, token }: { ticketId: string; token: string }) 
                       className="inline-flex items-center rounded-md bg-sky-500 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-sky-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-500"
                       onClick={() => setIsEditFormOpen(true)}
                     >
-                      <svg className="-ml-0.5 mr-1.5 h-5 w-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-                        <path d="M2.695 14.763l-1.292 1.292a1.335 1.335 0 00-.373.969V19.5a.5.5 0 00.5.5h2.121a.375.375 0 00.264-.643l-1.293-1.292c-.112-.112-.305-.112-.417 0zM19.477 5.425l-7.647 7.648a.5.5 0 01-.707 0l-2.192-2.192a.5.5 0 010-.707l7.649-7.647a.5.5 0 01.707 0l2.191 2.191a.5.5 0 010 .707z" />
-                      </svg>
+                      <FaEdit className="mr-1" />
                       Edit
                     </button>
                   </>
@@ -209,9 +234,7 @@ function TicketDetail({ ticketId, token }: { ticketId: string; token: string }) 
                               }
                             }}
                           >
-                            <svg className="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
-                            </svg>
+                            <FaCheck className="mr-1" />
                             Mark as Solution
                           </button>
                         )}

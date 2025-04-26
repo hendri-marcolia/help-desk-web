@@ -12,6 +12,11 @@
   --error: #dc2626; /* Red 600 */
 }
 
+.responsive {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
 @media (prefers-color-scheme: dark) {
   :root {
     --background: #0f172a; /* Slate 900 */

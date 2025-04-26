@@ -8,6 +8,7 @@ import RequestCodeDialog from '@/components/RequestCodeDialog';
 import UserForm from '@/components/UserForm';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { FaUserPlus, FaEdit, FaQrcode } from 'react-icons/fa';
 
 const AdminUsersPage = () => {
   const [users, setUsers] = useState<UserProfile[]>([]);
@@ -81,24 +82,23 @@ const AdminUsersPage = () => {
   return (
     <div>
       <Header />
-      <div className="container mx-auto py-8">
+      <main className="mx-auto max-w-6xl p-6 space-y-6">
         <h1 className="text-2xl font-bold mb-4">Manage Users</h1>
         <div className="mb-4">
           <button
-            className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded"
+            className="rounded-full bg-sky-500 px-4 py-2 text-sm font-semibold text-white hover:bg-sky-600 transition"
             onClick={handleCreateUser}
           >
-            Create User
+            Create User <FaUserPlus className="inline-block ml-1" />
           </button>
         </div>
-        <div className="overflow-x-auto">
+        <div className="overflow-x-auto responsive">
           <table className="min-w-full bg-white border border-gray-200">
             <thead>
               <tr>
                 <th className="px-4 py-2 text-left">User ID</th>
                 <th className="px-4 py-2 text-left">Username</th>
                 <th className="px-4 py-2 text-left">Name</th>
-                <th className="px-4 py-2 text-left">Email</th>
                 <th className="px-4 py-2 text-left">Role</th>
                 <th className="px-4 py-2 text-left">Actions</th>
               </tr>
@@ -109,21 +109,20 @@ const AdminUsersPage = () => {
                   <td className="px-4 py-2">{user.user_id}</td>
                   <td className="px-4 py-2">{user.username}</td>
                   <td className="px-4 py-2">{user.name}</td>
-                  <td className="px-4 py-2">{user.email}</td>
                   <td className="px-4 py-2">{user.role}</td>
                   <td className="px-4 py-2">
                     <button
-                      className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded disabled:opacity-50 disabled:cursor-not-allowed"
+                      className="rounded-full bg-sky-500 px-4 py-2 text-sm font-semibold text-white hover:bg-sky-600 transition disabled:opacity-50 disabled:cursor-not-allowed"
                       onClick={() => handleRequestCode(user.username || '')}
                       disabled={user.role === 'admin'}
                     >
-                      Request Code
+                      Request Code <FaQrcode className="inline-block ml-1" />
                     </button>
                     <button
-                      className="bg-yellow-500 hover:bg-yellow-700 text-white font-bold py-2 px-4 rounded ml-2"
+                      className="rounded-full bg-sky-500 px-4 py-2 text-sm font-semibold text-white hover:bg-sky-600 transition ml-2"
                       onClick={() => handleEditUser(user)}
                     >
-                      Edit
+                      Edit <FaEdit className="inline-block ml-1" />
                     </button>
                   </td>
                 </tr>
@@ -141,7 +140,7 @@ const AdminUsersPage = () => {
             onCancel={handleCloseUserForm}
           />
         )}
-      </div>
+      </main>
     </div>
   );
 };

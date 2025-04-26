@@ -77,11 +77,11 @@ export default function Header() {
                   aria-orientation="vertical"
                   aria-labelledby="user-menu"
                 >
-                  <div className="px-4 py-3 border-b border-gray-100">
-                    <p className="text-sm font-medium text-gray-900 truncate">
+                  <div className="px-4 py-4 border-b border-gray-100">
+                    <p className="text-sm font-medium text-gray-900">
                       Hi, {username || 'Guest'}
                     </p>
-                    <p className="text-xs text-gray-500 truncate">
+                    <p className="text-xs text-gray-500">
                       Role {localStorage.getItem('role') || 'No role assigned'}
                     </p>
                   </div>

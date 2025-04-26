@@ -6,7 +6,6 @@ export type UserProfile = {
     user_id?: string;
     username?: string;
     name?: string;
-    email?: string;
     role?: string;
 };
 

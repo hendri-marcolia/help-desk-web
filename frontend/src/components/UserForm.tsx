@@ -87,19 +87,17 @@ const UserForm: React.FC<UserFormProps> = ({ onSubmit, onCancel, initialValues }
             ))}
           </select>
         </div>
-        {!isUpdate && (
-          <div>
-            <label htmlFor="password" className="block text-sm font-medium text-gray-700">Password</label>
-            <input
-              type="password"
-              id="password"
-              className="mt-1 block w-full rounded-md border border-gray-300 shadow-sm focus:border-sky-500 focus:ring-sky-500 sm:text-sm px-3 py-2"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required={!isUpdate}
-            />
-          </div>
-        )}
+        <div>
+          <label htmlFor="password" className="block text-sm font-medium text-gray-700">Password</label>
+          <input
+            type="password"
+            id="password"
+            className="mt-1 block w-full rounded-md border border-gray-300 shadow-sm focus:border-sky-500 focus:ring-sky-500 sm:text-sm px-3 py-2"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required={!isUpdate}
+          />
+        </div>
         <div className="flex justify-end gap-4">
           <button type="button" onClick={onCancel} className="rounded-full px-5 py-2 text-sm font-semibold text-gray-500 hover:text-gray-700 transition">
             Cancel

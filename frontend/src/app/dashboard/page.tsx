@@ -8,6 +8,7 @@ import { useDebounce } from 'use-debounce';
 import TicketForm from '@/components/TicketForm';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { FaPlus } from 'react-icons/fa';
 
 type Ticket = {
   ticket_id: string;
@@ -170,7 +171,8 @@ className="rounded-lg border border-gray-300 px-3 py-2 pl-12 text-sm focus:borde
                   className="rounded-full bg-sky-500 px-4 py-2 text-sm font-semibold text-white hover:bg-sky-600 transition"
                   onClick={() => setIsNewCaseFormOpen(isNewCaseFormOpen => !isNewCaseFormOpen)}
                 >
-                  + New Case
+                  <FaPlus className="inline-block mr-1" />
+                  New Case
                 </button>
               </div>
             </div>

@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import { toast } from 'react-toastify';
 import ConfirmationDialog from '@/components/ConfirmationDialog';
+import { FaReply } from "react-icons/fa";
 
 interface ReplyFormProps {
   ticketId: string;
@@ -80,6 +81,7 @@ const ReplyForm: React.FC<ReplyFormProps> = ({ ticketId }: ReplyFormProps) => {
           onClick={handleConfirm}
           className="rounded bg-sky-500 px-4 py-2 text-white hover:bg-sky-600"
         >
+          <FaReply className="inline mr-2" />
           Post Reply
         </button>
       </form>
