@@ -5,31 +5,58 @@ import { AuthService } from '@/api/services/AuthService';
 import { UserProfile } from '@/api/models/UserProfile';
 import { AuthRequestByCode } from '@/api/models/AuthRequestByCode';
 import RequestCodeDialog from '@/components/RequestCodeDialog';
+import UserForm from '@/components/UserForm';
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const AdminUsersPage = () => {
   const [users, setUsers] = useState<UserProfile[]>([]);
   const [requestCode, setRequestCode] = useState<string | null>(null);
   const [expiresAt, setExpiresAt] = useState<number | null>(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [isUserFormOpen, setIsUserFormOpen] = useState(false);
+  const [selectedUser, setSelectedUser] = useState<UserProfile | null>(null);
+
+  const fetchUsers = async () => {
+    try {
+      const userList = await AuthService.getUsersList();
+      if (userList) {
+        setUsers(userList.users);
+      }
+    } catch (error) {
+      console.error('Error fetching users:', error);
+    }
+  };
 
   useEffect(() => {
-    const fetchUsers = async () => {
-      try {
-        const userList = await AuthService.getUsersList();
-        if (userList) {
-          setUsers(userList.users);
-        }
-      } catch (error) {
-        console.error('Error fetching users:', error);
-      }
-    };
-
     fetchUsers();
   }, []);
 
   const handleCreateUser = () => {
-    // TODO: Implement create user functionality
-    alert('Create user functionality not yet implemented.');
+    setSelectedUser(null);
+    setIsUserFormOpen(true);
+  };
+
+  const handleEditUser = (user: UserProfile) => {
+    setSelectedUser(user);
+    setIsUserFormOpen(true);
+  };
+
+  const handleCloseUserForm = () => {
+    setIsUserFormOpen(false);
+    setSelectedUser(null);
+  };
+
+  const handleSubmit = async (userData: UserProfile) => {
+    try {
+      await AuthService.createOrUpdateUser({ requestBody: userData });
+      toast.success(`User ${selectedUser ? 'updated' : 'created'} successfully!`);
+      handleCloseUserForm();
+      fetchUsers(); // Refresh user list
+    } catch (error) {
+      console.error('Error creating/updating user:', error);
+      toast.error(`Error creating/updating user: ${error}`);
+    }
   };
 
   const handleRequestCode = async (username: string) => {
@@ -41,7 +68,7 @@ const AdminUsersPage = () => {
       setIsDialogOpen(true);
     } catch (error) {
       console.error('Error requesting code:', error);
-      alert(`Error requesting code: ${error}`);
+      toast.error(`Error requesting code: ${error}`);
     }
   };
 
@@ -71,6 +98,7 @@ const AdminUsersPage = () => {
                 <th className="px-4 py-2 text-left">User ID</th>
                 <th className="px-4 py-2 text-left">Username</th>
                 <th className="px-4 py-2 text-left">Name</th>
+                <th className="px-4 py-2 text-left">Email</th>
                 <th className="px-4 py-2 text-left">Role</th>
                 <th className="px-4 py-2 text-left">Actions</th>
               </tr>
@@ -81,6 +109,7 @@ const AdminUsersPage = () => {
                   <td className="px-4 py-2">{user.user_id}</td>
                   <td className="px-4 py-2">{user.username}</td>
                   <td className="px-4 py-2">{user.name}</td>
+                  <td className="px-4 py-2">{user.email}</td>
                   <td className="px-4 py-2">{user.role}</td>
                   <td className="px-4 py-2">
                     <button
@@ -90,6 +119,12 @@ const AdminUsersPage = () => {
                     >
                       Request Code
                     </button>
+                    <button
+                      className="bg-yellow-500 hover:bg-yellow-700 text-white font-bold py-2 px-4 rounded ml-2"
+                      onClick={() => handleEditUser(user)}
+                    >
+                      Edit
+                    </button>
                   </td>
                 </tr>
               ))}
@@ -98,6 +133,13 @@ const AdminUsersPage = () => {
         </div>
         {isDialogOpen && requestCode && expiresAt && (
           <RequestCodeDialog code={requestCode} expires_at={expiresAt} onClose={handleCloseDialog} />
+        )}
+        {isUserFormOpen && (
+          <UserForm
+            initialValues={selectedUser || undefined}
+            onSubmit={handleSubmit}
+            onCancel={handleCloseUserForm}
+          />
         )}
       </div>
     </div>
