@@ -145,7 +145,7 @@ function TicketDetail({ ticketId, token }: { ticketId: string; token: string }) 
               </div>
               {/* Ai Feedback display */}
               {ticket.ai_request_in_progress && (
-                <div className="flex items-start gap-2 mb-4 p-4 bg-gray-100 rounded-md">
+                <div className="flex items-start gap-2 mb-4 p-4 rounded-md" style={{ backgroundColor: 'rgba(173, 216, 230, 0.2)', borderRadius: '8px', border: '2px solid lightblue' }}>
                   <FaMarker className="text-gray-500 animate-spin" />
                   <div className="text-gray-700">
                     Requesting AI Feedback... Might take around 10 - 20 seconds
@@ -156,7 +156,7 @@ function TicketDetail({ ticketId, token }: { ticketId: string; token: string }) 
                 </div>
               )}
               {ticket.ai_feedback && (
-                <div className="flex items-start gap-2 mb-4 p-4 bg-gray-100 rounded-md">
+                <div className="flex items-start gap-2 mb-4 p-4 rounded-md" style={{ backgroundColor: 'rgba(173, 216, 230, 0.2)', borderRadius: '8px', border: '2px solid lightblue' }}>
                   <FaMarker className="text-gray-500" />
                   <div className="text-gray-700" style={{ whiteSpace: 'pre-line' }}>
                     <div className="text-xs text-gray-500 mb-1">
