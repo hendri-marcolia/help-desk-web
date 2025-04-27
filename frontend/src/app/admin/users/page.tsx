@@ -17,6 +17,7 @@ const AdminUsersPage = () => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isUserFormOpen, setIsUserFormOpen] = useState(false);
   const [selectedUser, setSelectedUser] = useState<UserProfile | null>(null);
+  const [isUpdate, setIsUpdate] = useState(false);
 
   const fetchUsers = async () => {
     try {
@@ -35,11 +36,13 @@ const AdminUsersPage = () => {
 
   const handleCreateUser = () => {
     setSelectedUser(null);
+    setIsUpdate(false);
     setIsUserFormOpen(true);
   };
 
   const handleEditUser = (user: UserProfile) => {
     setSelectedUser(user);
+    setIsUpdate(true);
     setIsUserFormOpen(true);
   };
 
@@ -50,10 +53,10 @@ const AdminUsersPage = () => {
 
   const handleSubmit = async (userData: UserProfile) => {
     try {
-      await AuthService.createOrUpdateUser({ requestBody: userData });
+      await AuthService.createOrUpdateUser({ isCreate: !isUpdate ? "create" : "update" , requestBody: userData });
       toast.success(`User ${selectedUser ? 'updated' : 'created'} successfully!`);
       handleCloseUserForm();
-      fetchUsers(); // Refresh user list
+      fetchUsers();
     } catch (error) {
       console.error('Error creating/updating user:', error);
       toast.error(`Error creating/updating user: ${error}`);

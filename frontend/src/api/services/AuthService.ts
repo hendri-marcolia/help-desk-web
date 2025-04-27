@@ -112,12 +112,14 @@ export class AuthService {
      * @throws ApiError
      */
     public static createOrUpdateUser({
+        isCreate,
         requestBody,
     }: {
+        isCreate?: 'create' | 'update',
         requestBody: UserProfile
     }): CancelablePromise<UserProfile> {
         return __request(OpenAPI, {
-            method: 'POST',
+            method: isCreate == 'create' ? 'POST' : 'PATCH',
             url: '/auth/user',
             body: requestBody,
             mediaType: 'application/json',
