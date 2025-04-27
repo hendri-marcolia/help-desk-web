@@ -11,6 +11,7 @@ import type { CancelablePromise } from '../core/CancelablePromise';
 import { OpenAPI } from '../core/OpenAPI';
 import { request as __request } from '../core/request';
 import { UserList } from '../models/UserList';
+import { Setting, Settings } from '../models/Setting';
 export class AuthService {
     /**
      * User login
@@ -140,6 +141,58 @@ export class AuthService {
         return __request(OpenAPI, {
             method: 'POST',
             url: '/auth/fcm',
+            body: requestBody,
+            mediaType: 'application/json',
+        });
+    }
+    
+    /**
+     * Get All settings
+     * @returns Settings
+     * @throws ApiError
+     */
+    public static getAllSettings(): CancelablePromise<Settings> {
+        return __request(OpenAPI, {
+            method: 'GET',
+            url: '/auth/settings',
+        });
+    }
+    /**
+     * Get setting by key
+     * @returns Setting Setting
+     * @throws ApiError
+     */
+    public static getSettingByKeyId({
+        key_id,
+    }: {
+        key_id: string,
+    }): CancelablePromise<Setting> {
+        return __request(OpenAPI, {
+            method: 'GET',
+            url: '/auth/settings/{key_id}',
+            path: {
+                'key_id': key_id,
+            },
+        });
+    }
+    /**
+     * Update setting by key
+     * @returns any Success
+     * @throws ApiError
+     */
+    public static updateSetting({
+        requestBody,
+    }: {
+        requestBody: {
+            key_id: string;
+            data: {
+                [key: string]: Array<string>;
+            };
+        },
+    }): CancelablePromise<any> {
+        return __request(OpenAPI, {
+            method: 'POST',
+            url: '/auth/settings',
             body: requestBody,
             mediaType: 'application/json',
         });

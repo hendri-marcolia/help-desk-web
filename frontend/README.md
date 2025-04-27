@@ -84,17 +84,6 @@ npm run export
 - Tokens stored in localStorage.
 
 ## To-Be-Work-On
-User Management (Admin only)
-edit/delete users
-
-Setting Management (Admin only)
-edit settings like
-- Enable / Disable AI Feedback
-- Change AI Prompting Role
-- Modify Facility List
-- Modift Category List
-
-
 Protect routes based on auth state and role
 Polish & Responsiveness
 
