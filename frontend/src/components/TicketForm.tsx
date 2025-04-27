@@ -21,7 +21,6 @@ const TicketForm: React.FC<TicketFormProps> = ({ onSubmit, onCancel, initialValu
   const [facilities, setFacilities] = useState(['GOLDEN BREEZE', 'SPRINGWELL', 'DANA POINT']);
   const [categories, setCategories] = useState(['STAFF', 'FACILITY', 'RESIDENT']);
   const [isConfirmationOpen, setIsConfirmationOpen] = useState(false);
-  const [loading, setLoading] = useState(false);
   const [hasFetched, setHasFetched] = useState(false);
 
   const isUpdate = !!initialValues;
@@ -31,7 +30,6 @@ const TicketForm: React.FC<TicketFormProps> = ({ onSubmit, onCancel, initialValu
     if (hasFetched) return;
 
     const fetchOptions = async () => {
-      setLoading(true);
       try {
         AuthService.getSettingByKeyId({ key_id: 'facility_options' })
           .then((response) => {
@@ -55,7 +53,6 @@ const TicketForm: React.FC<TicketFormProps> = ({ onSubmit, onCancel, initialValu
       } catch (error) {
         console.error('Error fetching options:', error);
       } finally {
-        setLoading(false);
         setHasFetched(true);
       }
     };
