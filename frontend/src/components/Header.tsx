@@ -46,12 +46,12 @@ export default function Header() {
       {isAdmin && <Sidebar isCollapsed={isSidebarCollapsed} />}
       <div className={`flex-1 flex flex-col transition-margin-left duration-300 ${isSidebarCollapsed ? 'ml-0' : 'ml-64'}`}>
         <header className="flex items-center justify-between border-b bg-white px-8 py-4 shadow-sm">
-          <button
+          {isAdmin && <button
             onClick={toggleSidebar}
             className="mr-4 bg-gray-200 hover:bg-gray-300 rounded-full p-1 z-20 flex items-center justify-center"
           >
             {isSidebarCollapsed ? <FaChevronRight /> : <FaChevronLeft />}
-          </button>
+          </button>}
           <Link href="/dashboard">
             <h1 className="flex items-center gap-2 text-2xl font-extrabold bg-gradient-to-r from-sky-500 to-indigo-500 bg-clip-text text-transparent cursor-pointer">
               {/* The &apos; shouldn't get replaced by the symbol which caused a linting problem */}
@@ -70,32 +70,32 @@ export default function Header() {
                   {username?.charAt(0).toUpperCase() || '-'}
                 </span>
               </button>
-            {isOpen && (
-              <div
-                className="origin-top-right absolute right-0 mt-2 w-30 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 divide-y divide-gray-100"
-                role="menu"
-                aria-orientation="vertical"
-                aria-labelledby="user-menu"
-              >
-                <div className="px-4 py-3 border-b border-gray-100">
-                  <p className="text-sm font-medium text-gray-900 truncate">
-                    Hi, {username || 'Guest'}
-                  </p>
-                  <p className="text-xs text-gray-500 truncate">
-                    Role {localStorage.getItem('role') || 'No role assigned'}
-                  </p>
-                </div>
-                <button
-                  onClick={handleOpenLogoutConfirmation}
-                  className="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition"
-                  role="menuitem"
+              {isOpen && (
+                <div
+                  className="origin-top-right absolute right-0 mt-2 w-30 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 divide-y divide-gray-100"
+                  role="menu"
+                  aria-orientation="vertical"
+                  aria-labelledby="user-menu"
                 >
-                  Logout
-                </button>
-              </div>
-            )}
+                  <div className="px-4 py-4 border-b border-gray-100">
+                    <p className="text-sm font-medium text-gray-900">
+                      Hi, {username || 'Guest'}
+                    </p>
+                    <p className="text-xs text-gray-500">
+                      Role {localStorage.getItem('role') || 'No role assigned'}
+                    </p>
+                  </div>
+                  <button
+                    onClick={handleOpenLogoutConfirmation}
+                    className="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition"
+                    role="menuitem"
+                  >
+                    Logout
+                  </button>
+                </div>
+              )}
+            </div>
           </div>
-        </div>
         </header>
 
         <ConfirmationDialog

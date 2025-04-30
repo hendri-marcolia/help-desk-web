@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import ConfirmationDialog from './ConfirmationDialog';
 
 import type { Ticket } from '@/api/models/Ticket';
+import { AuthService } from '@/api';
 
 interface TicketFormProps {
   onSubmit: (data: Ticket) => void;
@@ -17,12 +18,47 @@ const TicketForm: React.FC<TicketFormProps> = ({ onSubmit, onCancel, initialValu
   const [facility, setFacility] = useState(initialValues?.facility || '');
   const [category, setCategory] = useState(initialValues?.category || '');
 
-  const facilities = ['GOLDEN BREEZE', 'SPRINGWELL', 'DANA POINT'];
-  const categories = ['STAFF', 'FACILITY', 'RESIDENT'];
+  const [facilities, setFacilities] = useState(['GOLDEN BREEZE', 'SPRINGWELL', 'DANA POINT']);
+  const [categories, setCategories] = useState(['STAFF', 'FACILITY', 'RESIDENT']);
   const [isConfirmationOpen, setIsConfirmationOpen] = useState(false);
+  const [hasFetched, setHasFetched] = useState(false);
 
   const isUpdate = !!initialValues;
   const formTitle = isUpdate ? 'Update Ticket' : 'Create New Ticket';
+
+  React.useEffect(() => {
+    if (hasFetched) return;
+
+    const fetchOptions = async () => {
+      try {
+        AuthService.getSettingByKeyId({ key_id: 'facility_options' })
+          .then((response) => {
+            if (response) {
+              const facilityOptions = response.data["facility"] || [];
+
+              setFacilities(facilityOptions);
+            }
+          }
+        );
+        AuthService.getSettingByKeyId({ key_id: 'category_options' })
+          .then((response) => {
+            if (response) {
+              const categoryOptions = response.data["category"] || [];
+
+              setCategories(categoryOptions);
+            }
+          }
+        );
+        
+      } catch (error) {
+        console.error('Error fetching options:', error);
+      } finally {
+        setHasFetched(true);
+      }
+    };
+
+    fetchOptions();
+  }, [hasFetched]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -82,8 +118,8 @@ const TicketForm: React.FC<TicketFormProps> = ({ onSubmit, onCancel, initialValu
             required
           >
             <option value="">Select Facility</option>
-            {facilities.map((facility) => (
-              <option key={facility} value={facility}>{facility}</option>
+            {facilities.map((facilityOption) => (
+              <option key={facilityOption} value={facilityOption}>{facilityOption}</option>
             ))}
           </select>
         </div>
@@ -97,8 +133,8 @@ const TicketForm: React.FC<TicketFormProps> = ({ onSubmit, onCancel, initialValu
             required
           >
             <option value="">Select Category</option>
-            {categories.map((category) => (
-              <option key={category} value={category}>{category}</option>
+            {categories.map((categoryOption) => (
+              <option key={categoryOption} value={categoryOption}>{categoryOption}</option>
             ))}
           </select>
         </div>

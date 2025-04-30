@@ -40,8 +40,27 @@ export default function LoginPage() {
   }, [router]);
 
   const handleLoginCode = async () => {
-    console.log('Login with code:', loginCode);
-    // TODO: Implement login with code
+    setLoading(true);
+    try {
+      const response = await import('@/api').then(({ AuthService }) =>
+        AuthService.postAuthLoginByCode({
+          requestBody: {
+            code: loginCode,
+          },
+        })
+      );
+      console.log('Login success:', response);
+      toast.info("Login success, redirecting to dashboard...");
+      localStorage.setItem('token', response.token ?? '');
+      localStorage.setItem('refresh_token', response.refresh_token ?? '');
+      // router.push('/dashboard');
+      checkToken(); // Check token after login
+    } catch (error) {
+      console.error('Login failed:', error);
+      toast.error('Login failed: ' + (error as Error).message);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleLogin = async () => {

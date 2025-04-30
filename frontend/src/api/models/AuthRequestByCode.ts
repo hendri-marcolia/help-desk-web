@@ -2,10 +2,8 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-export type UserProfile = {
-    user_id?: string;
-    username?: string;
-    name?: string;
-    role?: string;
+export type AuthRequestByCode = {
+    code : string;
+    expires_at? : string;
 };
 

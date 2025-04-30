@@ -274,7 +274,7 @@ export const catchErrorCodes = (options: ApiRequestOptions, result: ApiResult): 
               status: result.status,
             };
         }
-        throw new ApiError(options, result, error);
+        throw new ApiError(options, result, error + `: ${result.body.error || "Unknown error"}`);
     }
 
     if (!result.ok) {

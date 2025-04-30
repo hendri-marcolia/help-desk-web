@@ -84,12 +84,6 @@ npm run export
 - Tokens stored in localStorage.
 
 ## To-Be-Work-On
-User Management (Admin only)
-List users
-Create/edit/delete users
-Generate login codes
-Authentication Enhancements
-
 Protect routes based on auth state and role
 Polish & Responsiveness
 
