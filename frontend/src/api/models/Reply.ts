@@ -7,5 +7,5 @@ export type Reply = {
     reply_text?: string;
     created_by_name?: string;
     created_at?: string;
+    ai_feedback?: string;
 };
-
