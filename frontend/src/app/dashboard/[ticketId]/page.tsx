@@ -1,6 +1,6 @@
 'use client';
 export const runtime = 'edge';
-import React from 'react';
+import React, { useState } from 'react';
 import { Reply } from '../../../api/models/Reply';
 import TokenHandler from './TokenHandler';
 import ReplyForm from './ReplyForm';
@@ -22,6 +22,31 @@ export default function TicketDetailPage({ params }: { params: Promise<{ ticketI
           <TicketDetail ticketId={ticketId} token={token} />
         )}
       </TokenHandler>
+    </div>
+  );
+}
+
+function CollapsibleSection({ aiFeedback, initialState }: { aiFeedback: string | null | undefined, initialState?: boolean }) {
+  const [isOpen, setIsOpen] = useState(initialState || false);
+
+  if (!aiFeedback) {
+    return null;
+  }
+
+  return (
+    <div>
+      <button
+        className="w-full text-left py-2 px-4 rounded-md bg-blue-100 hover:bg-blue-200 focus:outline-none focus:shadow-outline text-sm text-gray-500 mb-1"
+        onClick={() => setIsOpen(!isOpen)}
+      >
+        AI Feedback
+      </button>
+      {isOpen && (
+        <div className="mt-2 p-2 rounded-md bg-blue-50 border border-blue-200">
+          <p className="text-xs text-gray-500 mb-1">AI Feedback:</p>
+          <ReactMarkdown>{aiFeedback}</ReactMarkdown>
+        </div>
+      )}
     </div>
   );
 }
@@ -156,15 +181,7 @@ function TicketDetail({ ticketId, token }: { ticketId: string; token: string }) 
                 </div>
               )}
               {ticket.ai_feedback && (
-                <div className="flex items-start gap-2 mb-4 p-4 rounded-md" style={{ backgroundColor: 'rgba(173, 216, 230, 0.2)', borderRadius: '8px', border: '2px solid lightblue' }}>
-                  <FaMarker className="text-gray-500" />
-                  <div className="text-gray-700" style={{ whiteSpace: 'pre-line' }}>
-                    <div className="text-xs text-gray-500 mb-1">
-                      AI generated Feedback - Use as a reference only, do not fully depend on it.
-                    </div>
-                    <ReactMarkdown>{ticket.ai_feedback}</ReactMarkdown>
-                  </div>
-                </div>
+                <CollapsibleSection aiFeedback={ticket.ai_feedback} initialState={true}/>
               )}
               {/* End Ai Feedback display */}
               <div className="mt-2 flex justify-end">
@@ -215,12 +232,7 @@ function TicketDetail({ ticketId, token }: { ticketId: string; token: string }) 
                   }).map((reply: Reply) => (
                     <li key={reply.reply_id} className={`rounded-lg border border-gray-200 p-4 ${reply.reply_id === ticket.solution_reply_id ? 'bg-green-50' : 'bg-gray-50'}`}>
                       <p className="text-gray-700 whitespace-pre-wrap text-base">{reply.reply_text}</p>
-                      {reply.ai_feedback && (
-                        <div className="mt-2 p-2 rounded-md bg-blue-50 border border-blue-200">
-                          <p className="text-xs text-gray-500 mb-1">AI Feedback:</p>
-                          <ReactMarkdown>{reply.ai_feedback}</ReactMarkdown>
-                        </div>
-                      )}
+                      <CollapsibleSection aiFeedback={reply.ai_feedback} />
                       <div className="flex items-center justify-between">
                         <p className="text-xs text-gray-500 mt-2 flex items-center gap-1">
                           <span className="text-gray-400">By {reply.created_by_name}</span>
