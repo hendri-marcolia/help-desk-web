@@ -215,6 +215,12 @@ function TicketDetail({ ticketId, token }: { ticketId: string; token: string }) 
                   }).map((reply: Reply) => (
                     <li key={reply.reply_id} className={`rounded-lg border border-gray-200 p-4 ${reply.reply_id === ticket.solution_reply_id ? 'bg-green-50' : 'bg-gray-50'}`}>
                       <p className="text-gray-700 whitespace-pre-wrap text-base">{reply.reply_text}</p>
+                      {reply.ai_feedback && (
+                        <div className="mt-2 p-2 rounded-md bg-blue-50 border border-blue-200">
+                          <p className="text-xs text-gray-500 mb-1">AI Feedback:</p>
+                          <ReactMarkdown>{reply.ai_feedback}</ReactMarkdown>
+                        </div>
+                      )}
                       <div className="flex items-center justify-between">
                         <p className="text-xs text-gray-500 mt-2 flex items-center gap-1">
                           <span className="text-gray-400">By {reply.created_by_name}</span>
