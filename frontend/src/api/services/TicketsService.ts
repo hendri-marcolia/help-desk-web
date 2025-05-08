@@ -140,6 +140,7 @@ export class TicketsService {
         requestBody: {
             reply_id?: string;
             status?: string;
+            is_ai_feedback?: boolean;
         },
     }): CancelablePromise<Ticket> {
         return __request(OpenAPI, {

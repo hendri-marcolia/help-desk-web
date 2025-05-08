@@ -26,7 +26,7 @@ export default function TicketDetailPage({ params }: { params: Promise<{ ticketI
   );
 }
 
-function CollapsibleSection({ aiFeedback, initialState }: { aiFeedback: string | null | undefined, initialState?: boolean }) {
+function CollapsibleSection({ aiFeedback, initialState, ticketId, reply, ticket, callback, is_solved_by_ai }: { aiFeedback: string | null | undefined, initialState?: boolean, ticketId: string, reply: Reply, ticket: Ticket, callback: () => Promise<void>, is_solved_by_ai?: boolean }) {
   const [isOpen, setIsOpen] = useState(initialState || false);
 
   if (!aiFeedback) {
@@ -42,9 +42,22 @@ function CollapsibleSection({ aiFeedback, initialState }: { aiFeedback: string |
         AI Feedback
       </button>
       {isOpen && (
-        <div className="mt-2 p-2 rounded-md bg-blue-50 border border-blue-200">
+        <div className={`mt-2 p-2 rounded-md border ${is_solved_by_ai ? 'bg-green-50 border-green-200' : 'bg-blue-50  border-blue-200'}`}>
           <p className="text-xs text-gray-500 mb-1">AI Feedback:</p>
           <ReactMarkdown>{aiFeedback}</ReactMarkdown>
+          {reply && reply.reply_id && ticketId && ticket.status !== 'closed' && ((localStorage.getItem('role') === 'admin') || (ticket.created_by === localStorage.getItem('user_id'))) && (
+            <div className="flex items-center justify-end">
+              <button
+                className="inline-flex items-center text-sky-500 hover:text-sky-700 text-sm"
+                onClick={async () => {
+                  callback();
+                }}
+              >
+                <FaCheck className="mr-1" />
+                Mark AI Feedback as Solution
+              </button>
+            </div>
+          )}
         </div>
       )}
     </div>
@@ -100,6 +113,23 @@ function TicketDetail({ ticketId, token }: { ticketId: string; token: string }) 
       }
     }
   }, [ticketId]);
+
+  const markSolution = async (replyId?: string, status?: string, is_ai_feedback?: boolean, success_msg?: string, error_msg?: string) => {
+    try {
+      await TicketsService.patchTicketsSolution({
+        ticketId: ticketId, requestBody: {
+          reply_id: replyId ?? '',  // Use empty string if replyId is not provided
+          status: status ? status : 'closed',  // Set status to 'closed' if not provided
+          is_ai_feedback: is_ai_feedback ? is_ai_feedback : false,  // Set is_ai_feedback to false if not provided
+        }
+      });
+      toast.success(success_msg || 'Reply marked as solution!');
+      fetchTicket();
+    } catch (error) {
+      console.error(error_msg || 'Failed to mark reply as solution:', error);
+      toast.error(error_msg || 'Failed to mark reply as solution.');
+    }
+  }
 
   React.useEffect(() => {
     fetchTicket();
@@ -181,7 +211,14 @@ function TicketDetail({ ticketId, token }: { ticketId: string; token: string }) 
                 </div>
               )}
               {ticket.ai_feedback && (
-                <CollapsibleSection aiFeedback={ticket.ai_feedback} initialState={true}/>
+                <CollapsibleSection
+                  aiFeedback={ticket.ai_feedback}
+                  initialState={true}
+                  ticketId={ticketId}
+                  reply={{}}
+                  ticket={ticket}
+                  callback={async () => { }}
+                />
               )}
               {/* End Ai Feedback display */}
               <div className="mt-2 flex justify-end">
@@ -191,15 +228,9 @@ function TicketDetail({ ticketId, token }: { ticketId: string; token: string }) 
                       <button
                         className="inline-flex items-center rounded-md bg-green-500 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-green-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-500 mr-2"
                         onClick={async () => {
-                          try {
-                            await TicketsService.patchTicketsSolution({ ticketId: ticketId, requestBody: { status: 'open' } });
-                            toast.success('Ticket reopened successfully!');
-                            fetchTicket();
-                          } catch (error) {
-                            console.error('Failed to reopen ticket:', error);
-                            toast.error('Failed to reopen ticket.');
-                          }
-                        }}
+                          markSolution('', 'open', false, 'Ticket reopened successfully!', 'Failed to reopen ticket.');
+                        }
+                        }
                       >
                         <FaRedo className="mr-1" />
                         Reopen
@@ -230,27 +261,33 @@ function TicketDetail({ ticketId, token }: { ticketId: string; token: string }) 
                     }
                     return 0;
                   }).map((reply: Reply) => (
-                    <li key={reply.reply_id} className={`rounded-lg border border-gray-200 p-4 ${reply.reply_id === ticket.solution_reply_id ? 'bg-green-50' : 'bg-gray-50'}`}>
+
+                    <li key={reply.reply_id} className={`rounded-lg border border-gray-200 p-4 ${reply.reply_id === ticket.solution_reply_id && !ticket.is_solved_by_ai ? 'bg-green-50' : 'bg-gray-50'}`}>
                       <p className="text-gray-700 whitespace-pre-wrap text-base">{reply.reply_text}</p>
-                      <CollapsibleSection aiFeedback={reply.ai_feedback} />
+                      <CollapsibleSection
+                        aiFeedback={reply.ai_feedback}
+                        ticketId={ticketId}
+                        reply={reply}
+                        ticket={ticket}
+                        is_solved_by_ai={reply.reply_id === ticket.solution_reply_id && ticket.is_solved_by_ai}
+                        initialState={reply.reply_id === ticket.solution_reply_id}
+                        callback={() => markSolution(reply.reply_id, 'closed', true)}
+                      />
                       <div className="flex items-center justify-between">
                         <p className="text-xs text-gray-500 mt-2 flex items-center gap-1">
                           <span className="text-gray-400">By {reply.created_by_name}</span>
                           at {new Date(reply.created_at ?? '').toLocaleString()}
+                          {reply.reply_id === ticket.solution_reply_id && (
+                            <span className="text-green-500 font-semibold ml-2">Solution</span>
+                          )}
+                          {reply.reply_id === ticket.solution_reply_id && ticket.is_solved_by_ai && (
+                            <span className="text-green-500 font-semibold ml-2">by AI Feedback</span>
+                          )}
                         </p>
                         {ticket.status !== 'closed' && ((localStorage.getItem('role') === 'admin') || (ticket.created_by === localStorage.getItem('user_id'))) && (
                           <button
                             className="inline-flex items-center text-sky-500 hover:text-sky-700 text-sm"
-                            onClick={async () => {
-                              try {
-                                await TicketsService.patchTicketsSolution({ ticketId: ticketId, requestBody: { reply_id: reply.reply_id } });
-                                toast.success('Reply marked as solution!');
-                                fetchTicket();
-                              } catch (error) {
-                                console.error('Failed to mark reply as solution:', error);
-                                toast.error('Failed to mark reply as solution.');
-                              }
-                            }}
+                            onClick={() => markSolution(reply.reply_id, 'closed', false)}
                           >
                             <FaCheck className="mr-1" />
                             Mark as Solution
