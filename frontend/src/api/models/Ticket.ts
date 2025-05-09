@@ -17,6 +17,7 @@ export type Ticket = {
     created_by_name?: string;
     updated_at?: string;
     solution_reply_id?: string;
+    is_solved_by_ai?: boolean;
     ai_feedback?: string;
     ai_request_in_progress?: string;
     replies?: Array<Reply>;
